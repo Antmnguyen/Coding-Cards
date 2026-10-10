@@ -29,6 +29,22 @@ import {
   sortingMore,
   twoPointersMore,
 } from "./python/pass5";
+import {
+  loopsRecall,
+  slicingRecall,
+  stringsRecall,
+  stacksRecall,
+  iterationRecall,
+  sortingRecall,
+  dictsRecall,
+  countersRecall,
+  heapsRecall,
+  classesRecall,
+  gridsRecall,
+  treesRecall,
+  itertoolsRecall,
+  backtrackingRecall,
+} from "./python/pass6";
 import { sets } from "./python/sets";
 import { slicing } from "./python/slicing";
 import { grids, linkedLists, trees } from "./python/structures";
@@ -99,6 +115,20 @@ const decks: Card[] = [
   ...prefixSumsMore,
   ...dpMore,
   ...backtrackingMore,
+  ...loopsRecall,
+  ...slicingRecall,
+  ...stringsRecall,
+  ...stacksRecall,
+  ...iterationRecall,
+  ...sortingRecall,
+  ...dictsRecall,
+  ...countersRecall,
+  ...heapsRecall,
+  ...classesRecall,
+  ...gridsRecall,
+  ...treesRecall,
+  ...itertoolsRecall,
+  ...backtrackingRecall,
 ];
 
 export const cards: Card[] = decks

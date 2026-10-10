@@ -14,7 +14,7 @@ The plan is `RECALL_AUDIT_PLAN.md`. Step numbers below are that file's steps. Se
 | 4 | Variant check, gap list | **done**. Gap list below; filling gaps is follow-up work |
 | 5 | Fix `level` wording | **done** for the meaning (types, Home chip now says `3 rare`, both docs). Individual skills were not re-levelled |
 | 6 | Rules, card plan and tests updated | **done**. `CARD_RULES.md` (new "Two ideas at most" section, variant rule, `kind`), `CARD_PLAN.md` (goal, axis rule, decision log), `tests/cards.test.ts` (3 new tests), `tests/pool.test.ts` (new) |
-| 7 | Tests, typecheck, build | tests green (5,690), `tsc` clean; **done**. The app was open, so the exe was built beside it: `release/codingcards-new.exe`. Close the app and run `npm run dist` to replace `release/codingcards.exe` |
+| 7 | Tests, typecheck, build | tests green (5,690), `tsc` clean; **done**. `npm run dist` rebuilt `release/codingcards.exe` (2026-10-10 16:02) with the gap cards in |
 
 ## Step 3 sections
 
@@ -45,7 +45,29 @@ Skills with one recall card left:
 Recall + thinking per topic after the audit:
 basics 33+0, conditionals 23+0, loops 75+16, functions 32+1, calling 74+1, comprehensions 24+6, conversion 15+0, math 40+3, bits 28+2, lists 99+4, slicing 92+6, strings 87+14, tuples 48+0, dicts 58+11, defaultdict 18+3, sets 39+4, counter 28+10, stack 16+3, deque 24+0, heaps 45+8, iteration 30+24, itertools 19+11, sorting 20+14, bisect 22+0, classes 32+8, objects 35+2, grids 23+11, linked-lists 23+6, trees 21+13, graphs 27+9, intervals 5+6, two-pointers 17+4, prefix-sums 14+3, dp 25+5, backtracking 8+7, misc 13+0.
 
-Follow-up, not done here: write 2-idea recall cards for the gap skills (for example a single `for j in range(i + 1, n):` header with the outer loop in the given code), as data variants per `CARD_RULES.md`.
+### Gap cards (done)
+
+`src/cards/python/pass6.ts` adds 69 recall cards in 21 new skills, each a 2-idea piece of a bigger line with the rest in the given code. Deck is now 1,516 cards: 1,301 recall, 215 thinking. Tests green (5,961).
+
+| Gap | New skill(s) |
+|---|---|
+| `for-pairs`, `for-nested-three`, grid double loop | `for-inner` (inner header with the outer loop given) |
+| `slice-generate` | `slice-each` |
+| `stack-conditions`, `while-compound` | `stack-top-test` |
+| `zip-compare` | `zip-neighbours`, `pairs-reduce` |
+| `zip-longest` | `zip-longest-fill` |
+| map/filter with a lambda | `map-filter-lambda` |
+| `sort-multi-key`, `sort-indexes` | `key-tuple`, `key-negate`, `sort-by-lookup` |
+| `dict-sort`, `counter-sort` | `dict-sort-pieces`, `counter-sort-pieces` |
+| `heap-build` | `heap-list-build` |
+| `class-define`, property, dataclass | `class-headers`, `class-decorated-headers` |
+| `grid-bounds`, `grid-aggregate` | `grid-in-bounds`, `grid-fold` |
+| `tree-traversal`, `tree-recursion` | `tree-visit-lines`, `tree-return-combined` |
+| `itertools-combos` | `groupby-keys` |
+| `bt-loop` | `for-from-start` |
+| `str-rebuild` | `words-rebuild` |
+
+Still with one recall card and no new ones: `for-sorted`, `dd-create-custom`, `counter-sources`, `iter-next`, `sort-comparator`, `tree-levels`, `product`. Their thinking cards need 3 ideas to mean anything, or the 2-idea piece already exists elsewhere.
 
 ## Notes and decisions
 
