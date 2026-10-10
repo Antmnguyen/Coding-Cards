@@ -8,6 +8,19 @@ export function topic(language: Language, tag: string, seeds: (Seed | Seed[])[])
   return seeds.flat().map((s) => ({ ...s, language, tags: s.tags ?? [tag], skill: s.skill ?? s.id, level: s.level ?? 2 }));
 }
 
+/** Shorthand for one variant: the fields every card needs, in reading order, then any extras. */
+export function v(
+  k: string,
+  prompt: string,
+  setup: string,
+  expect: string,
+  solution: string,
+  check: string,
+  more: Partial<Seed> = {},
+): Variant {
+  return { k, prompt, setup: setup || undefined, expect, solution, check, ...more };
+}
+
 /**
  * One piece of syntax applied to several shapes of data.
  * `base` holds what the variants share; each variant overrides the rest.

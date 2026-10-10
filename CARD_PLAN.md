@@ -6,7 +6,7 @@ Every card still follows `CARD_RULES.md`. This file says **what** to cover and *
 
 ## 0. Progress log (read this first, update it after every section)
 
-**Last updated:** 2026-10-10, end of work cycle 1. **Deck size: 288 cards.** `npm test` green.
+**Last updated:** 2026-10-10, work cycle 3 in progress. Step 4 (hashing) done. **Deck size: 688 cards.** `npm test` green (2,698 tests). Step 5 is next.
 
 ### How to resume
 1. Read `CARD_RULES.md` (how one card is written) and one finished section file as a model: `src/cards/python/loops.ts` for hand-written variants, `src/cards/python/slicing.ts` for generated variants.
@@ -25,24 +25,23 @@ Every card still follows `CARD_RULES.md`. This file says **what** to cover and *
 | 2 | A4 Loops | `loops.ts` | 22 | 74 | **done, first pass** (plan target 140) |
 | 2 | C2 Slicing | `slicing.ts` | 28 | 84 | **done, first pass** (plan target 110) |
 | 2 | A6 Functions: calling | `calling.ts` | 11 | 43 | **done, first pass** (plan target 120) |
-| 3 | C1 Lists: create and read | `lists.ts` | 10 | 10 | old single-variant cards only; **next up** |
-| 3 | C3 Lists: change | `lists.ts` | — | — | not started (some old cards overlap) |
-| 3 | C5 Strings | `strings.ts` | 14 | 14 | old single-variant cards only |
-| 3 | C6 Tuples | `tuples.ts` | 5 | 5 | old single-variant cards only |
-| 3 | A1 Variables and operators | — | — | — | not started |
-| 3 | A2 Type conversion | — | — | — | not started |
-| 3 | A3 Conditionals | — | — | — | not started |
-| 3 | A5 Functions: defining | — | — | — | not started |
-| 3 | A7 Comprehensions | — | — | — | not started |
-| 4 | D1 Dicts | `dicts.ts` | 13 | 13 | old single-variant cards only |
-| 4 | D2 defaultdict / OrderedDict | — | — | — | not started |
-| 4 | D3 Sets | `sets.ts` | 9 | 9 | old single-variant cards only |
-| 4 | D4 Counter | `collections.ts` | 5 | 5 | old single-variant cards only |
-| 5 | G1 zip / enumerate / map | — | — | — | not started (loop-header forms are already in `loops.ts`) |
+| 3 | C1 Lists: create and read + C3 Lists: change | `lists.ts` | 18 | 79 | **done, first pass** (plan target 160) |
+| 3 | C5 Strings | `strings.ts` | 18 | 78 | **done, first pass** (plan target 160) |
+| 3 | C6 Tuples | `tuples.ts` | 10 | 38 | **done, first pass** (plan target 60) |
+| 3 | A1 Variables and operators | `basics.ts` (export `basics`) | 8 | 33 | **done, first pass** (plan target 60) |
+| 3 | A2 Type conversion | `basics.ts` (export `conversion`) | 3 | 15 | **done, first pass** (plan target 50; str/int and list() conversions live in `strings.ts` and `lists.ts`) |
+| 3 | A3 Conditionals | `basics.ts` (export `conditionals`) | 5 | 23 | **done, first pass** (plan target 30) |
+| 3 | A5 Functions: defining | `functions.ts` (export `functions`) | 10 | 33 | **done, first pass** (plan target 90) |
+| 3 | A7 Comprehensions | `functions.ts` (export `comprehensions`) | 8 | 30 | **done, first pass** (plan target 70) |
+| 4 | D1 Dicts | `dicts.ts` (export `dicts`) | 11 | 48 | **done, first pass** (plan target 150) |
+| 4 | D2 defaultdict / OrderedDict | `dicts.ts` (export `defaultdicts`) | 6 | 21 | **done, first pass** (plan target 50) |
+| 4 | D3 Sets | `sets.ts` | 7 | 31 | **done, first pass** (plan target 80) |
+| 4 | D4 Counter | `counter.ts` | 6 | 27 | **done, first pass** (plan target 50) |
+| 5 | G1 zip / enumerate / map | `iteration.ts` (to create) | — | — | not started; **next up** (loop-header forms are already in `loops.ts`, pair-up/unzip in `tuples.ts`) |
 | 5 | F1 Sorting | `misc.ts` | 4 | 4 | old single-variant cards only |
 | 5 | B1 Arithmetic and math | `misc.ts` | 8 | 8 | old single-variant cards only |
 | 6 | E1 Stack | — | — | — | not started |
-| 6 | E2 Queue and deque | `collections.ts` | 5 | 5 | old single-variant cards only |
+| 6 | E2 Queue and deque | `collections.ts` (now holds only `deques`) | 5 | 5 | old single-variant cards only |
 | 6 | E3 Heaps (all variants) | `heaps.ts` | 8 | 8 | old single-variant cards only |
 | 6 | H1 Classes | `misc.ts` | 6 | 6 | old single-variant cards only |
 | 6 | H2 Objects inside other structures | — | — | — | not started |
@@ -53,6 +52,13 @@ Every card still follows `CARD_RULES.md`. This file says **what** to cover and *
 "First pass" means every skill in the plan's list has cards and they pass, but the card count is below the plan's target. The second pass adds the remaining variants listed under "Still to add" below.
 
 ### Still to add in finished sections (second pass)
+- **Lists:** stack idioms belong to E1; still missing here are `list.sort(key=...)` forms (F1), nested-list aliasing trap card, `copy.deepcopy`, `sum` with a start value, `min`/`max` of several arguments, `enumerate`-based search. The 3 `list-comprehension` cards overlap the `comprehensions` section and should be merged in the duplicate review.
+- **Strings:** `ljust`/`rjust`, `title`/`capitalize`/`swapcase`, `partition`, `splitlines`, `string.ascii_lowercase`, f-string alignment and binary formats, multi-character `strip`, iterating pairs of characters, building with a list in a loop.
+- **Tuples:** `namedtuple`, tuple concatenation and repetition, `count`/`index`, sorting by a tuple key with mixed direction (F1).
+- **Basics / conditionals / conversion:** walrus, `del name`, bitwise augmented operators (B2), `hex`/`oct`, `bool()` of each container, `match` is deliberately skipped.
+- **Functions:** keyword-only header, `*args` + `**kwargs` together, docstring, generator function with `yield`, decorator line (`@cache` is in J3), returning a lambda/closure.
+- **Dicts / defaultdict / sets / Counter:** dict with tuple and object values, `popitem`, `dict(zip())` variants by value type, `len` of nested structures, dict of dicts build, `Counter.subtract`, `Counter` of tuples/words from a grid, set of frozensets, `set.pop` loop, `defaultdict(dict)`, LRU get/put lines as a group.
+- **Comprehensions:** dict of lists, comprehension over `dict.items()` into a list of tuples sorted, set from grid cells, walrus inside a comprehension.
 - **Loops:** `for` over a list of lists by index of pairs/triples (`for i in range(len(a))` with `a[i]`, `a[i + 1]`), three-level loop for triples, `while` with a `not` condition, `while i < n and j < m` merge loop, walrus in a `while`, eight-direction neighbours, `for child in node.children`, loops over `range` with a negative step other than -1.
 - **Slicing:** slices with two negative bounds (`x[-3:-1]`), comparing two slices, palindrome via slice, prefix/suffix test via slice, `x[i:j:k]` with all three as variables, a copy with `x[:]` on each type.
 - **Calling:** more signature shapes (set, dict, tuple, bool flag, callback with two arguments), calling with a slice or a comprehension as the argument, chaining method calls, calling a nested helper that reads an outer variable, `sorted`/`max`/`min` with `key=` and a named function.
@@ -65,6 +71,9 @@ Every card still follows `CARD_RULES.md`. This file says **what** to cover and *
 - **Imports:** still required in the answer when the given code does not import the module (open decision 1 in section 5 is unresolved; ask before changing).
 - **Packaging tip:** `npm run dist` hangs if `release/codingcards.exe` is open. Close the app first, or build beside it with `npx electron-builder --win portable -c.portable.artifactName=codingcards-new.exe` (run `npm run build` first).
 - **Tests only run from `tests/`** (`vitest.config.ts`), so copies of the repo under `.claude/` are ignored.
+- **`v()` shorthand** in `src/cards/topic.ts` writes a variant as `v(key, prompt, setup, expect, solution, check, extras)`. Sections written after loops/slicing/calling use it; it is the preferred form.
+- **`IF` template** in `basics.ts` runs an `if` line by letting it flip `out` from "no" to "yes". Reuse it for any card whose answer is an `if` line.
+- **"Does not raise" cards** cannot be checked by a no-op-proof check on their own (doing nothing also does not raise). Put the answer in a loop template that tries one present and one missing value, as `dict-remove--pop-default` and `set-remove--discard` do.
 - **Editing tip:** write card files with the editor tools, not shell heredocs; `\n` inside card strings gets mangled by the shell.
 
 ## 1. How coverage is built: skills and variants
@@ -327,7 +336,7 @@ Used as checklists of what exists, not copied as cards; every card is rewritten 
 | 2 | A4 Loops, C2 Slicing, A6 Calling functions | The basics you named, and the heaviest variant sections; they shake out the variant system |
 | 3 | C1, C3, C5, C6 (lists, strings, tuples) and A1–A3, A5, A7 | Rest of the core language |
 | 4 | D1–D4 (dicts, defaultdict, sets, Counter) | Most-used LeetCode structures |
-| 5 | G1 zip/enumerate/map, F1 sorting, B1 math | High-frequency helpers |
+| 5 | G1 zip / enumerate / map | `iteration.ts` (to create) | — | — | not started; **next up** (loop-header forms are already in `loops.ts`, pair-up/unzip in `tuples.ts`) |
 | 6 | E1–E3 (stack, deque, heaps with all variants), H1–H2 (classes, objects in structures) | Depends on the object snippets |
 | 7 | C4 grids, I1–I4 (linked lists, trees, graphs, tries, intervals) | Depends on classes and deque/heap cards |
 | 8 | F2, G2, B2, J1–J4, K2 | Rarer and technique-specific |
