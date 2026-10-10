@@ -63,6 +63,8 @@ Every card still follows `CARD_RULES.md`. This file says **what** to cover and *
 - **Shared class snippets** are in `src/cards/python/given.ts` (`LIST_NODE`, `TREE_NODE`, `POINT`). Add `NODE` and `INTERVAL` there when first needed.
 - **Old cards replaced by a new section are deleted**, not kept alongside (done for the list/string/dict/tuple/deque/heap cards that the loops and slicing sections now cover). Do the same when rewriting `lists.ts`, `strings.ts` and the rest: the rewrite replaces the file.
 - **Imports:** still required in the answer when the given code does not import the module (open decision 1 in section 5 is unresolved; ask before changing).
+- **Packaging tip:** `npm run dist` hangs if `release/codingcards.exe` is open. Close the app first, or build beside it with `npx electron-builder --win portable -c.portable.artifactName=codingcards-new.exe` (run `npm run build` first).
+- **Tests only run from `tests/`** (`vitest.config.ts`), so copies of the repo under `.claude/` are ignored.
 - **Editing tip:** write card files with the editor tools, not shell heredocs; `\n` inside card strings gets mangled by the shell.
 
 ## 1. How coverage is built: skills and variants
