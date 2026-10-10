@@ -54,6 +54,7 @@ export function Results() {
                 <p>
                   <Prompt text={card.prompt} />
                 </p>
+                {card.setup && <pre className="dim">{card.setup}</pre>}
                 <pre className="solution">{card.solution}</pre>
                 <p className="explain">{card.explain}</p>
               </div>

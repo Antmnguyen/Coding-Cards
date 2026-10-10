@@ -209,7 +209,7 @@ td.num {
 
 .prompt {
   margin: 0;
-  font-size: 22px;
+  font-size: 19px;
   line-height: 1.5;
 }
 
@@ -242,14 +242,49 @@ td.num {
   border-color: var(--bad);
 }
 
-.miss {
+.given {
+  padding: 12px 14px;
+  border-left: 2px solid var(--dim);
+  border-radius: 0 8px 8px 0;
+  background: var(--panel);
+  font-size: 17px;
+  line-height: 1.5;
+  user-select: text;
+}
+
+.expect {
+  margin: 0;
+  font-size: 15px;
+}
+
+.expect span {
+  margin-right: 8px;
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.reveal {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  padding-top: 8px;
   font-size: 18px;
 }
 
-.given {
+.verdict {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.reveal.ok .verdict {
+  color: var(--ok);
+}
+
+.reveal.bad .verdict {
+  color: var(--bad);
+}
+
+.reveal.bad .yours {
   color: var(--bad);
   text-decoration: line-through;
 }

@@ -128,7 +128,6 @@ export const useStore = create<State>((set, get) => ({
       },
     });
     void window.api.write("history", nextHistory);
-    if (get().session!.q.queue.length === 0) get().finish();
   },
 
   finish() {

@@ -54,6 +54,7 @@ describe("pickWeighted", () => {
     language: "python",
     tags: ["t"],
     prompt: "",
+    expect: "",
     solution: "",
     explain: "",
   }));

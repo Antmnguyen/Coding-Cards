@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { matches } from "../../core/match";
+import { matches, normalise } from "../../core/match";
 import type { Card } from "../../core/types";
 import { runCheck } from "../../runner/runner";
 import { useStore } from "../store";
 import { Prompt, repsPerMinute, useKeys } from "../ui";
 
 const FLASH_MS = 90;
+const INDENT = "    ";
+const EDITOR_ROWS = 3;
 
-type Phase = "answer" | "checking" | "missed";
+type Phase = "answer" | "checking" | "reveal";
 
 export function Drill() {
   const session = useStore((s) => s.session)!;
@@ -15,12 +17,12 @@ export function Drill() {
   const pyReady = useStore((s) => s.pyReady);
   const recordAnswer = useStore((s) => s.recordAnswer);
   const finish = useStore((s) => s.finish);
-  const start = useStore((s) => s.start);
   const goHome = useStore((s) => s.goHome);
 
   const [input, setInput] = useState("");
   const [phase, setPhase] = useState<Phase>("answer");
-  const [missed, setMissed] = useState<{ card: Card; given: string } | null>(null);
+  // The answered card stays on screen with its solution until Enter, right or wrong.
+  const [reveal, setReveal] = useState<{ card: Card; given: string; ok: boolean } | null>(null);
   const [flash, setFlash] = useState<"ok" | "bad" | null>(null);
   const [now, setNow] = useState(Date.now());
   const shownAt = useRef(Date.now());
@@ -50,21 +52,24 @@ export function Drill() {
   }, [flash]);
 
   useKeys((e) => {
-    if (e.key === "Tab") {
-      e.preventDefault();
-      start();
-    } else if (e.key === "Escape") {
-      goHome();
-    }
+    if (e.key === "Escape") goHome();
   });
 
-  // While a miss is on screen the queue has already moved on, so keep showing the missed card.
+  // The queue has already moved on while an answer is revealed, so keep showing that card.
   const headId = session.q.queue[0];
-  const card = missed?.card ?? (headId ? session.cards[headId] : undefined);
+  const card = reveal?.card ?? (headId ? session.cards[headId] : undefined);
+
+  // The last card finishes the queue while its reveal is still up; leave once it is dismissed.
+  useEffect(() => {
+    if (!card) finish();
+  }, [card, finish]);
+
   if (!card) return null;
 
+  const mustRetype = phase === "reveal" && !reveal!.ok && settings.forceCorrection;
+
   function nextCard() {
-    setMissed(null);
+    setReveal(null);
     setInput("");
     setPhase("answer");
     shownAt.current = Date.now();
@@ -72,8 +77,8 @@ export function Drill() {
 
   async function submit(card: Card) {
     if (phase === "checking") return;
-    if (phase === "missed") {
-      if (settings.forceCorrection && !matches(card, input, settings.strict)) return setFlash("bad");
+    if (phase === "reveal") {
+      if (mustRetype && !matches(card, input, settings.strict)) return setFlash("bad");
       return nextCard();
     }
     if (input.trim() === "") return;
@@ -87,31 +92,37 @@ export function Drill() {
     }
     recordAnswer(card.id, ok, ms);
     setFlash(ok ? "ok" : "bad");
-    if (ok) return nextCard();
-    setMissed({ card, given: input });
+    setReveal({ card, given: input, ok });
     setInput("");
-    setPhase("missed");
+    setPhase("reveal");
+  }
+
+  /** Replaces the selection with text and puts the caret after it. */
+  function insert(el: HTMLTextAreaElement, text: string) {
+    const caret = el.selectionStart + text.length;
+    setInput(input.slice(0, el.selectionStart) + text + input.slice(el.selectionEnd));
+    requestAnimationFrame(() => el.setSelectionRange(caret, caret));
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    const el = e.currentTarget;
+    if (e.key === "Tab") {
+      e.preventDefault();
+      return insert(el, INDENT);
+    }
     if (e.key !== "Enter") return;
     e.preventDefault();
     if (!e.shiftKey) return void submit(card!);
     // Shift+Enter starts a new line, keeping the indent and adding a level after a colon.
-    const el = e.currentTarget;
     const before = input.slice(0, el.selectionStart);
     const line = before.slice(before.lastIndexOf("\n") + 1);
-    const indent = (line.match(/^ */)?.[0] ?? "") + (line.trimEnd().endsWith(":") ? "    " : "");
-    const next = before + "\n" + indent + input.slice(el.selectionEnd);
-    const caret = before.length + 1 + indent.length;
-    setInput(next);
-    requestAnimationFrame(() => el.setSelectionRange(caret, caret));
+    insert(el, "\n" + (line.match(/^ */)?.[0] ?? "") + (line.trimEnd().endsWith(":") ? INDENT : ""));
   }
 
   const elapsed = now - session.startedAt;
   const remaining = session.total - session.q.mastered.length;
-  const multiline = card.solution.includes("\n");
   const secondsLeft = session.endsAt ? Math.max(0, Math.ceil((session.endsAt - now) / 1000)) : null;
+  const typing = phase !== "reveal" || mustRetype;
 
   return (
     <main className="drill">
@@ -137,10 +148,17 @@ export function Drill() {
         <p className="prompt">
           <Prompt text={card.prompt} />
         </p>
+        {card.setup && <pre className="given">{card.setup}</pre>}
+        <p className="expect">
+          <span>expected</span> {card.expect}
+        </p>
 
-        {missed && (
-          <div className="miss">
-            <pre className="given">{missed.given}</pre>
+        {reveal && (
+          <div className={"reveal " + (reveal.ok ? "ok" : "bad")}>
+            <div className="verdict">{reveal.ok ? "correct" : "wrong"}</div>
+            {(!reveal.ok || normalise(reveal.given) !== normalise(card.solution)) && (
+              <pre className="yours">{reveal.given}</pre>
+            )}
             <pre className="solution">{card.solution}</pre>
             <p className="explain">{card.explain}</p>
           </div>
@@ -149,20 +167,14 @@ export function Drill() {
         <textarea
           ref={inputRef}
           className={"answer" + (flash ? ` flash-${flash}` : "")}
-          rows={Math.max(1, input.split("\n").length)}
+          rows={typing ? Math.max(EDITOR_ROWS, input.split("\n").length) : 1}
           value={input}
           autoFocus
           spellCheck={false}
           autoComplete="off"
-          readOnly={phase === "checking"}
+          readOnly={phase === "checking" || !typing}
           placeholder={
-            phase === "missed"
-              ? settings.forceCorrection
-                ? "type the solution to continue"
-                : "enter to continue"
-              : multiline
-                ? "shift+enter for a new line"
-                : ""
+            mustRetype ? "type the solution to continue" : phase === "reveal" ? "enter for the next card" : "your code"
           }
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
@@ -172,8 +184,8 @@ export function Drill() {
 
       <footer>
         <span>enter submit</span>
-        <span>tab restart</span>
-        <span>esc home</span>
+        <span>shift+enter new line</span>
+        <span>esc quit</span>
         <span>{settings.strict ? "strict" : pyReady ? "smart + run" : "smart"}</span>
       </footer>
     </main>

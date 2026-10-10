@@ -7,6 +7,7 @@ const card = (solution: string, accepted?: string[]): Card => ({
   language: "python",
   tags: ["t"],
   prompt: "",
+  expect: "",
   explain: "",
   solution,
   accepted,

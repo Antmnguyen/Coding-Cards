@@ -15,16 +15,18 @@ A desktop app: one `codingcards.exe` you double-click. No terminal, no server, n
 - **Vitest** for the queue logic and for validating cards.
 
 ## Card format
-Cards live in per-topic data files (`cards/python/heaps.ts`, `dicts.ts`, `strings.ts`, …):
+Cards live in per-topic data files (`src/cards/python/heaps.ts`, `dicts.ts`, `strings.ts`, …). The rules for writing them are in `CARD_RULES.md`.
 
 ```ts
 {
-  id, tags: ["heap"], prompt: "Pop the smallest item from heap h",
-  solution: "heapq.heappop(h)",
-  accepted: ["heappop(h)"],            // optional alternates
-  explain: "heapq.heappop(h), not h.heappop()",
-  setup: "import heapq; h=[1,3,2]",    // optional, for run-checking
-  check: "_ == 1 and h == [2,3]"       // optional assertion
+  id, tags: ["heaps"],
+  prompt: "`h` is a list that is already a min-heap. Remove its smallest item and get that item back.",
+  setup: "h = [1, 3, 2]",                     // given code, shown on the card and run first
+  expect: "gives 1, and h keeps 2 and 3",     // what a right answer produces, shown on the card
+  solution: "import heapq\nheapq.heappop(h)", // must run on its own after the given code
+  accepted: [...],                            // optional alternates
+  explain: "heapq.heappop(h), not h.heappop().",
+  check: "_ == 1 and sorted(h) == [2, 3]"     // optional assertion
 }
 ```
 
@@ -56,7 +58,7 @@ A stats view on the Home screen shows accuracy per topic and the worst cards.
 ## UI
 Three screens, all keyboard-only:
 - **Home**: tag chips, session size or time, mode toggles. Works like Monkeytype's config bar, with no separate settings page.
-- **Drill**: HUD (remaining, streak, reps/min), prompt, and one auto-focused monospace input. `Enter` submits. On a miss it shows the solution and the one-line explanation inline, and `Enter` advances. `Tab` restarts and `Esc` goes home.
+- **Drill**: HUD (remaining, streak, reps/min), prompt, the given code, the expected result, and an auto-focused multi-line code input. `Enter` submits and `Shift+Enter` adds a line. After every answer, right or wrong, it shows the solution and the one-line explanation, and `Enter` advances. `Esc` goes home.
 - **Results**: accuracy, reps/min, missed cards.
 
 For speed there are no route transitions or animations beyond a colour flash under 100ms on right/wrong. The input is a single controlled field.
