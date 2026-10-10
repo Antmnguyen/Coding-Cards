@@ -6,3 +6,9 @@ export const POINT = "class Point:\n    def __init__(self, x, y):\n        self.
 
 export const TREE_NODE =
   "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right";
+
+export const TASK =
+  "class Task:\n    def __init__(self, priority, name):\n        self.priority = priority\n        self.name = name";
+
+export const INTERVAL =
+  "class Interval:\n    def __init__(self, start, end):\n        self.start = start\n        self.end = end";

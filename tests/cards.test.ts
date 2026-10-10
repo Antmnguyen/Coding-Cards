@@ -1,6 +1,7 @@
 import { loadPyodide } from "pyodide";
 import { beforeAll, describe, expect, it } from "vitest";
 import { cards, tags } from "../src/cards";
+import { TRAP_IDS } from "../src/cards/traps";
 import { compose } from "../src/core/compose";
 import { smartMatch } from "../src/core/match";
 import { HARNESS, RUN_FN } from "../src/runner/harness";
@@ -26,6 +27,11 @@ describe("cards", () => {
 
   it("each belong to a topic shown on Home", () => {
     expect(cards.filter((c) => !c.tags.every((t) => tags.includes(t))).map((c) => c.id)).toEqual([]);
+  });
+
+  it("only tags real cards as traps", () => {
+    const ids = new Set(cards.map((c) => c.id));
+    expect([...TRAP_IDS].filter((id) => !ids.has(id))).toEqual([]);
   });
 
   it("never repeat the same prompt and given code", () => {

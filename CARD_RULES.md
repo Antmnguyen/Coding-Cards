@@ -22,7 +22,7 @@ The reader should never have to guess what a name is.
 The answer box is a small code editor and the answer is run as written.
 
 1. **The solution must run on its own after the given code** **(tested)**. Anything the given code does not provide, the answer has to: if the card uses `Counter` and the given code does not import it, the solution is two lines, the import and then the call.
-2. **The given code only imports a module when it has to**, which is when its own example values need it (`q = deque([1, 2])`). Otherwise the import is part of the answer.
+2. **Imports are typed on the basic cards and given on the rest.** Each module has one or two level-1 cards whose answer includes the import line. Every other card for that module shows the import in the given code and says "already imported" in the prompt, so drilling heaps is not a hundred repeats of `import heapq`.
 3. **`check` decides correctness by running the answer**, so any variable naming or equivalent phrasing passes. It is an expression evaluated after the answer, with `_` bound to the value of the answer's last line. Prefer checking the resulting state (`h == [-5]`) over checking only `_`, so a typed-in literal cannot pass. A do-nothing answer must fail the check **(tested)**.
 4. **Leave `check` out only when the line cannot run alone** (a loop header, a `return`) or when the point of the card is one specific method and a check could not tell it from a wrong one (`discard` vs `remove`). Those cards are matched as text against `solution` and `accepted`.
 5. **`accepted` lists other common correct spellings.** Each one must also pass the check **(tested)**.
@@ -39,6 +39,7 @@ check: "out == [0, 1, 2, 3]",
 - The check looks at what the template produced (`out`, `result`), never at `_`.
 - `expect` says what that variable ends up as: `out ends up [0, 1, 2, 3]`.
 - Names that only the template uses (`out`) go in the template, not in `setup`.
+- The template must terminate even if the answer does nothing; bound any loop that relies on the answer to stop it.
 
 ## Skills, variants and levels
 - **`skill()`** groups cards that drill the same syntax on different data. Card ids are `<skill>--<variant>`. A session shows one variant per skill before repeating a skill.
@@ -55,7 +56,7 @@ Right or wrong, the card stays up and shows the solution and `explain`; Enter mo
 
 ## Housekeeping
 - `id` is unique, kebab-case, and never changes once used, because history is stored against it **(tested)**.
-- One topic tag per card unless it clearly belongs to two.
+- One topic tag per card. Trap cards also get the `traps` tag by being listed in `src/cards/traps.ts`, not by editing the card.
 - A card is added to the topic file it belongs to; a new topic gets its own file and a line in `src/cards/index.ts`.
 
 ## Example
