@@ -1,11 +1,12 @@
 import type { Card, Language } from "../core/types";
 
-export type Seed = Omit<Card, "language" | "tags" | "skill" | "level"> & Partial<Pick<Card, "tags" | "skill" | "level">>;
+export type Seed = Omit<Card, "language" | "tags" | "skill" | "level" | "kind"> &
+  Partial<Pick<Card, "tags" | "skill" | "level" | "kind">>;
 type Variant = Partial<Seed> & { k: string };
 
 /** Builds a deck where every card carries the topic tag unless it sets its own. */
 export function topic(language: Language, tag: string, seeds: (Seed | Seed[])[]): Card[] {
-  return seeds.flat().map((s) => ({ ...s, language, tags: s.tags ?? [tag], skill: s.skill ?? s.id, level: s.level ?? 2 }));
+  return seeds.flat().map((s) => ({ ...s, language, tags: s.tags ?? [tag], skill: s.skill ?? s.id, level: s.level ?? 2, kind: s.kind ?? "recall" }));
 }
 
 /** Shorthand for one variant: the fields every card needs, in reading order, then any extras. */

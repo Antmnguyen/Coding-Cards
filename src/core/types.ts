@@ -6,8 +6,10 @@ export interface Card {
   tags: string[];
   /** The piece of syntax this card drills. Variants of one skill share it. */
   skill: string;
-  /** 1 = bare basics, 2 = everyday LeetCode, 3 = tricky or rare. */
+  /** How common the syntax is: 1 = bare basics, 2 = everyday LeetCode, 3 = rare. */
   level: 1 | 2 | 3;
+  /** "recall" = at most 2 ideas, typed in seconds. "think" = 3 or more; left out of sessions unless asked for. */
+  kind: "recall" | "think";
   /** Says what every name in the given code is, then what to do. */
   prompt: string;
   /** The given code: shown on the card with example values, and run before the answer. */
@@ -51,6 +53,8 @@ export interface Settings {
   length: SessionLength;
   /** Empty means every level. */
   levels: number[];
+  /** Also draw the "think" cards. Off by default. */
+  thinking: boolean;
   strict: boolean;
   forceCorrection: boolean;
 }

@@ -1,6 +1,6 @@
 # Card expansion plan
 
-Goal: if a line of Python can show up in a LeetCode solution, there is a card for it, from `for i in range(n):` up to a heap of objects with a tiebreaker. Today there are 96 cards in 11 topics. This plan takes that to roughly 2,000 cards in 38 sections across 11 groups.
+Goal: if a small piece of Python syntax can show up in a LeetCode solution, there is a quick recall card for it. Each card is at most 2 ideas (see "Two ideas at most" in `CARD_RULES.md`); bigger lines are built from several cards, not asked as one. Today there are 96 cards in 11 topics. This plan takes that to roughly 2,000 cards in 38 sections across 11 groups.
 
 Every card still follows `CARD_RULES.md`. This file says **what** to cover and **in what order**; that file says how a single card is written.
 
@@ -89,6 +89,7 @@ Second-pass cards go in `src/cards/python/pass2.ts` (start a `pass3.ts` when tha
 - **Calling:** more signature shapes (set, dict, tuple, bool flag, callback with two arguments), calling with a slice or a comprehension as the argument, chaining method calls, calling a nested helper that reads an outer variable, `sorted`/`max`/`min` with `key=` and a named function.
 
 ### Decisions made while implementing (do not redo)
+- **Recall cards are 2 ideas at most (2026-10-10).** The deck had drifted into stacked one-liners (`points.sort(key=lambda p: p.y, reverse=True)`). Every card with 3 or more ideas was labelled thinking in `src/cards/thinking.ts` (215 of 1,447) and is off by default; none was rewritten or deleted. `npm test` now fails a recall card over 2 ideas. Details in `RECALL_AUDIT_PLAN.md` and `RECALL_AUDIT_PROGRESS.md`. **New cards: do not cross variant axes, and do not write new thinking cards.** The "Still to add" list above predates this; skip any item on it that cannot be asked in 2 ideas (multi-key sorts, "loop as a whole", k-way merge lines, LRU get/put groups and similar).
 - **Lines that cannot run alone use `template`.** A loop header is placed into `out = []\n{answer}\n    out.append(...)` and the check looks at `out`. This means header cards are run-checked, not text-matched. `collect()` in `loops.ts` builds the common template.
 - **Generated variants.** `seq()` in `slicing.ts` produces list / string / tuple cards from one definition. Reuse that pattern wherever a skill applies unchanged to several sequence types.
 - **Shared class snippets** are in `src/cards/python/given.ts` (`LIST_NODE`, `TREE_NODE`, `POINT`). Add `NODE` and `INTERVAL` there when first needed.
@@ -119,6 +120,8 @@ Each section below lists its skills. Each skill is then multiplied along whichev
 | **Naming** | LeetCode-style names (`nums`, `s`, `grid`, `root`, `head`, `intervals`) and neutral ones (`a`, `x`), so no card is recognisable by its variable name |
 | **Phrasing of the same result** | when two spellings are both idiomatic (`a[::-1]` and `reversed(a)`), each gets its own card that asks for it specifically |
 
+**Only the data axes make variants: element type, container shape and naming.** Position, direction, mutation, call form and phrasing each change the syntax, so each is its own skill with its own data variants. Axes are never crossed in one card: "objects" × "in place" × "descending" is three ideas, which is a thinking card.
+
 Not every skill uses every axis. The rule is: **a skill gets a variant wherever the syntax actually changes or where people actually slip.** `len()` of a list vs a dict vs a string is three cheap variants. "Append to a list of ints vs a list of strs" is not a variant, because nothing changes.
 
 ### App changes this needs (do these first)
@@ -127,7 +130,7 @@ Not every skill uses every axis. The rule is: **a skill gets a variant wherever 
 2. **Weighting by skill as well as card.** A miss on one variant raises the weight of its sibling variants a little, because the weakness is the skill.
 3. **`variants()` helper** next to `topic()`: one base card plus a list of `{ key, setup, expect, solution, check, prompt? }` overrides, so 6 variants are 6 short entries and not 6 copies.
 4. **Two-level topics on Home.** 38 sections will not fit in one chip row. The 11 groups become the chips; a selected group expands to its sections.
-5. **`level` field (1 to 3).** 1 = bare basics, 2 = everyday LeetCode, 3 = tricky or rare. A Home toggle filters by level, so "the very basics" and "heap of objects with `__lt__`" do not have to be mixed.
+5. **`level` field (1 to 3).** 1 = bare basics, 2 = everyday LeetCode, 3 = rare (how common the syntax is; how hard a card is is `kind`). A Home toggle filters by level, so "the very basics" and "heap of objects with `__lt__`" do not have to be mixed.
 6. **Shared given-code snippets** for the standard classes (`ListNode`, `TreeNode`, `Node`, `Interval`) so every card that uses them shows the same definition.
 7. **Card tests extended**: every skill has at least 2 variants unless marked `single`, and no two cards share the same prompt + given code.
 
@@ -297,7 +300,7 @@ Trie node as a dict and as a class, insert / search loops; intervals: sort by st
 
 ### J. Technique lines
 
-One-line idioms of the standard techniques. Still syntax, not problem solving: the card gives the situation and asks for the line.
+One-line idioms of the standard techniques. Still syntax, not problem solving: the card gives the situation and asks for the line. These sections and the trie cards are where thinking cards come from most easily; a line here is only a recall card if it is 2 ideas at most.
 
 **J1. Two pointers and sliding window** (18 → 45): pointer init both ends, move inward, window grow/shrink, window length `r - l + 1`, window counts dict, shrink-while loop, best-so-far update.
 

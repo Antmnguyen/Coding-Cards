@@ -54,6 +54,7 @@ describe("pickWeighted", () => {
     language: "python",
     skill: id,
     level: 2,
+    kind: "recall",
     tags: ["t"],
     prompt: "",
     expect: "",
@@ -83,6 +84,7 @@ describe("drawSession", () => {
     tags: ["t"],
     skill,
     level: 2,
+    kind: "recall",
     prompt: "",
     expect: "",
     solution: "",
@@ -116,7 +118,7 @@ describe("drawSession", () => {
 
 describe("tagStats", () => {
   it("counts a card as mastered once its streak reaches 2", () => {
-    const card: Card = { id: "c", language: "python", tags: ["t"], skill: "c", level: 1, prompt: "", expect: "", solution: "", explain: "" };
+    const card: Card = { id: "c", language: "python", tags: ["t"], skill: "c", level: 1, kind: "recall", prompt: "", expect: "", solution: "", explain: "" };
     expect(tagStats([card], replay([true]))[0]!.mastered).toBe(0);
     expect(tagStats([card], replay([true, true]))[0]!.mastered).toBe(1);
     expect(tagStats([card], replay([true, true, false]))[0]!.mastered).toBe(0);
