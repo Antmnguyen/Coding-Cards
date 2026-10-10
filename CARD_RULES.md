@@ -27,6 +27,27 @@ The answer box is a small code editor and the answer is run as written.
 4. **Leave `check` out only when the line cannot run alone** (a loop header, a `return`) or when the point of the card is one specific method and a check could not tell it from a wrong one (`discard` vs `remove`). Those cards are matched as text against `solution` and `accepted`.
 5. **`accepted` lists other common correct spellings.** Each one must also pass the check **(tested)**.
 
+## Lines that cannot run alone
+A loop header, an `if` line, a `return`, or a line inside a function gets a **`template`**: code with an `{answer}` slot that the answer is placed into before running. The card shows the template with a blank where the answer goes, so the reader sees the loop body or the surrounding function.
+
+```ts
+template: "out = []\n{answer}\n    out.append(i)",   // answer: for i in range(n):
+check: "out == [0, 1, 2, 3]",
+```
+
+- The slot sits on its own line; its indentation is applied to every line of the answer.
+- The check looks at what the template produced (`out`, `result`), never at `_`.
+- `expect` says what that variable ends up as: `out ends up [0, 1, 2, 3]`.
+- Names that only the template uses (`out`) go in the template, not in `setup`.
+
+## Skills, variants and levels
+- **`skill()`** groups cards that drill the same syntax on different data. Card ids are `<skill>--<variant>`. A session shows one variant per skill before repeating a skill.
+- A variant must change what you type or where people slip. Changing only the example numbers is not a variant.
+- Vary names across variants (`nums`, `a`, `s`, `words`, `grid`) so a card cannot be recognised by its variable name.
+- No two cards may have the same prompt and given code **(tested)**.
+- **`level`**: 1 = bare basics, 2 = everyday LeetCode, 3 = tricky or rare. Set per skill.
+- Standard classes (`ListNode`, `TreeNode`, `Point`) come from `src/cards/python/given.ts`, so every card shows the same definition.
+
 ## After answering
 Right or wrong, the card stays up and shows the solution and `explain`; Enter moves on.
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { givenCode } from "../../core/compose";
 import { matches, normalise } from "../../core/match";
 import type { Card } from "../../core/types";
 import { runCheck } from "../../runner/runner";
@@ -122,6 +123,7 @@ export function Drill() {
   const elapsed = now - session.startedAt;
   const remaining = session.total - session.q.mastered.length;
   const secondsLeft = session.endsAt ? Math.max(0, Math.ceil((session.endsAt - now) / 1000)) : null;
+  const given = givenCode(card);
   const typing = phase !== "reveal" || mustRetype;
 
   return (
@@ -148,7 +150,7 @@ export function Drill() {
         <p className="prompt">
           <Prompt text={card.prompt} />
         </p>
-        {card.setup && <pre className="given">{card.setup}</pre>}
+        {given && <pre className="given">{given}</pre>}
         <p className="expect">
           <span>expected</span> {card.expect}
         </p>

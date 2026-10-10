@@ -11,15 +11,6 @@ export const tuples = topic("python", "tuples", [
     check: "(dist, x, y) == (5, 1, 2)",
   },
   {
-    id: "tuple-loop-unpack",
-    expect: "the first pass has dist=5 x=1 y=2",
-    prompt:
-      "`heap` is a list of 3-value tuples. Write only the `for` line of a loop that unpacks each tuple straight into `dist`, `x` and `y`.",
-    setup: "heap = [(5, 1, 2), (7, 0, 3)]",
-    solution: "for dist, x, y in heap:",
-    explain: "Unpack directly in the loop; no temporary `item` is needed.",
-  },
-  {
     id: "tuple-return-two",
     expect: "the caller receives (1, 9)",
     prompt: "You are inside a function that has two numbers, `lo` and `hi`. Return both of them at once.",

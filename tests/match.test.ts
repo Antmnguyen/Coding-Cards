@@ -5,6 +5,8 @@ import type { Card } from "../src/core/types";
 const card = (solution: string, accepted?: string[]): Card => ({
   id: "t",
   language: "python",
+  skill: "s",
+  level: 2,
   tags: ["t"],
   prompt: "",
   expect: "",

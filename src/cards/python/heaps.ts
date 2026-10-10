@@ -74,12 +74,4 @@ export const heaps = topic("python", "heaps", [
     explain: "The count comes first, then the iterable.",
     check: "_ == [5, 4]",
   },
-  {
-    id: "heap-while-over-k",
-    expect: "the loop runs while h has 3 or more items",
-    prompt: "`h` is a heap (a list) and `k` is an int. Write only the `while` line of a loop that runs as long as `h` holds more than `k` items.",
-    setup: "h = [1, 3, 2, 7]\nk = 2",
-    solution: "while len(h) > k:",
-    explain: "Compare len(h), not the list itself.",
-  },
 ]);

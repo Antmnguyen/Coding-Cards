@@ -2,15 +2,6 @@ import { topic } from "../topic";
 
 export const strings = topic("python", "strings", [
   {
-    id: "str-reverse",
-    expect: "gives \"cba\"",
-    prompt: "`s` is a string. Get it reversed.",
-    setup: 's = "abc"',
-    solution: "s[::-1]",
-    explain: "Strings have no reverse(); slice with a step of -1.",
-    check: '_ == "cba"',
-  },
-  {
     id: "str-palindrome",
     expect: "gives True",
     prompt: "`sub` is a string. Write an expression that is True when it reads the same backwards.",

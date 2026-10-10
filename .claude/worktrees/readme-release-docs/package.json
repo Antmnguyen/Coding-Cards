@@ -1,0 +1,46 @@
+{
+  "name": "codingcards",
+  "version": "0.1.0",
+  "description": "Rapid-fire Python syntax flashcards",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "node build.mjs",
+    "start": "node build.mjs && electron .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "dist": "node build.mjs && electron-builder --win portable"
+  },
+  "build": {
+    "appId": "dev.codingcards.app",
+    "productName": "codingcards",
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": "portable"
+    },
+    "portable": {
+      "artifactName": "codingcards.exe"
+    }
+  },
+  "devDependencies": {
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.2",
+    "pyodide": "^314.0.7",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3",
+    "zustand": "^5.0.15"
+  }
+}

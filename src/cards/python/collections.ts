@@ -45,15 +45,6 @@ export const deques = topic("python", "deque", [
     explain: "One word, all lowercase: appendleft.",
     check: "list(q) == [0, 1]",
   },
-  {
-    id: "deque-while",
-    expect: "the loop stops once q has no items",
-    prompt: "`q` is a deque. Write only the `while` line of a loop that keeps running until `q` is empty.",
-    setup: "from collections import deque\nq = deque([1, 2])",
-    solution: "while q:",
-    accepted: ["while len(q) > 0:"],
-    explain: "Empty containers are falsy.",
-  },
 ]);
 
 export const counters = topic("python", "counter", [

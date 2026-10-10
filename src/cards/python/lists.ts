@@ -38,15 +38,6 @@ export const lists = topic("python", "lists", [
     check: "_ == 3",
   },
   {
-    id: "list-slice",
-    expect: "gives [1, 2, 3, 4, 5, 6, 7]",
-    prompt: "`a` is a list of 10 items. Get the items at indexes 1 through 7, including index 7.",
-    setup: "a = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]",
-    solution: "a[1:8]",
-    explain: "The end index is exclusive, so 1..7 is a[1:8].",
-    check: "_ == [1, 2, 3, 4, 5, 6, 7]",
-  },
-  {
     id: "list-copy",
     expect: "gives a new list [1, 2]",
     prompt: "`path` is a list. Make a separate copy of it, so later changes to `path` do not affect the copy.",
@@ -55,15 +46,6 @@ export const lists = topic("python", "lists", [
     accepted: ["list(path)", "path.copy()"],
     explain: "Appending plain `path` stores a reference that later pops will empty.",
     check: "_ == path and _ is not path",
-  },
-  {
-    id: "list-reverse-copy",
-    expect: "gives [3, 2, 1], and a stays [1, 2, 3]",
-    prompt: "`a` is a list. Get a reversed copy of it using a slice, leaving `a` itself unchanged.",
-    setup: "a = [1, 2, 3]",
-    solution: "a[::-1]",
-    explain: "reversed(a) gives an iterator, not a list; a.reverse() returns None.",
-    check: "_ == [3, 2, 1] and a == [1, 2, 3]",
   },
   {
     id: "list-sorted",
@@ -111,23 +93,5 @@ export const lists = topic("python", "lists", [
     accepted: ["[x ** 2 for x in a]"],
     explain: "Comprehension: [expr for item in iterable].",
     check: "_ == [1, 4, 9]",
-  },
-  {
-    id: "list-enumerate",
-    expect: "the loop sees i=0 v=\"x\", then i=1 v=\"y\", then i=2 v=\"z\"",
-    prompt:
-      "`a` is a list. Write only the `for` line of a loop that gives you both the index `i` and the value `v` of each item.",
-    setup: 'a = ["x", "y", "z"]',
-    solution: "for i, v in enumerate(a):",
-    explain: "enumerate yields (index, value), index first.",
-  },
-  {
-    id: "list-range-reverse",
-    expect: "i goes 4, 3, 2, 1, 0",
-    prompt: "`n` is an int. Write only the `for` line of a loop that counts `i` down from `n - 1` to 0.",
-    setup: "n = 5",
-    solution: "for i in range(n - 1, -1, -1):",
-    accepted: ["for i in reversed(range(n)):"],
-    explain: "The stop is exclusive, so stopping at 0 needs -1.",
   },
 ]);

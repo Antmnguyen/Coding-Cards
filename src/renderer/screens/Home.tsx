@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { cards, tags as allTags } from "../../cards";
+import { cards, groups } from "../../cards";
 import { tagStats, worstCards } from "../../core/history";
 import type { SessionLength } from "../../core/types";
 import { useStore } from "../store";
@@ -18,6 +18,10 @@ const LENGTHS: { label: string; value: SessionLength }[] = [
 const sameLength = (a: SessionLength, b: SessionLength) =>
   a.kind === "count" ? b.kind === "count" && a.n === b.n : b.kind === "timed" && a.seconds === b.seconds;
 
+const LEVELS = ["1 basics", "2 everyday", "3 tricky"];
+
+const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
+
 interface Item {
   label: string;
   active: boolean;
@@ -33,19 +37,22 @@ export function Home() {
   const [focus, setFocus] = useState({ row: 0, col: 0 });
 
   const rows: { name: string; items: Item[] }[] = [
+    { name: "topics", items: [{ label: "all", active: settings.tags.length === 0, run: () => update({ tags: [] }) }] },
+    ...groups.map((group) => ({
+      name: group.name,
+      items: group.topics.map((tag) => ({
+        label: tag,
+        active: settings.tags.includes(tag),
+        run: () => update({ tags: toggle(settings.tags, tag) }),
+      })),
+    })),
     {
-      name: "topics",
-      items: [
-        { label: "all", active: settings.tags.length === 0, run: () => update({ tags: [] }) },
-        ...allTags.map((tag) => ({
-          label: tag,
-          active: settings.tags.includes(tag),
-          run: () =>
-            update({
-              tags: settings.tags.includes(tag) ? settings.tags.filter((t) => t !== tag) : [...settings.tags, tag],
-            }),
-        })),
-      ],
+      name: "level",
+      items: LEVELS.map((label, i) => ({
+        label,
+        active: settings.levels.includes(i + 1),
+        run: () => update({ levels: toggle(settings.levels, i + 1) }),
+      })),
     },
     {
       name: "length",
@@ -124,7 +131,7 @@ export function Home() {
       {hasHistory && (
         <section className="stats">
           <div>
-            <h2>accuracy by topic</h2>
+            <h2>accuracy and mastery by topic</h2>
             <table>
               <tbody>
                 {stats.map((s) => (
@@ -132,7 +139,7 @@ export function Home() {
                     <td>{s.tag}</td>
                     <td className="num">{percent(s.correct, s.attempts)}</td>
                     <td className="num dim">
-                      {s.seen}/{s.total} seen
+                      {s.mastered}/{s.total} mastered
                     </td>
                   </tr>
                 ))}

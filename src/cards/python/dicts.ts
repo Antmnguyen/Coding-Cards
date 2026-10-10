@@ -86,14 +86,6 @@ export const dicts = topic("python", "dicts", [
     check: "_ == [1, 2]",
   },
   {
-    id: "dict-items-loop",
-    expect: "the loop sees k=\"a\" v=1, then k=\"b\" v=2",
-    prompt: "`d` is a dictionary. Write only the `for` line of a loop that gives you each key `k` with its value `v`.",
-    setup: 'd = {"a": 1, "b": 2}',
-    solution: "for k, v in d.items():",
-    explain: "Looping over d alone gives only the keys.",
-  },
-  {
     id: "dict-comprehension",
     expect: "pos is {\"x\": 0, \"y\": 1}",
     prompt:

@@ -1,6 +1,7 @@
 import { loadPyodide } from "pyodide";
 import { beforeAll, describe, expect, it } from "vitest";
-import { cards } from "../src/cards";
+import { cards, tags } from "../src/cards";
+import { compose } from "../src/core/compose";
 import { smartMatch } from "../src/core/match";
 import { HARNESS, RUN_FN } from "../src/runner/harness";
 
@@ -23,6 +24,15 @@ describe("cards", () => {
     expect(ids.filter((id, i) => ids.indexOf(id) !== i)).toEqual([]);
   });
 
+  it("each belong to a topic shown on Home", () => {
+    expect(cards.filter((c) => !c.tags.every((t) => tags.includes(t))).map((c) => c.id)).toEqual([]);
+  });
+
+  it("never repeat the same prompt and given code", () => {
+    const seen = cards.map((c) => `${c.prompt}|${c.setup}|${c.template}`);
+    expect(cards.filter((_, i) => seen.indexOf(seen[i]!) !== i).map((c) => c.id)).toEqual([]);
+  });
+
   it.each(cards)("$id is well formed", (card) => {
     expect(card.tags.length).toBeGreaterThan(0);
     expect(card.prompt.trim()).not.toBe("");
@@ -41,12 +51,12 @@ describe("cards", () => {
 
   it.each(checked)("$id: solution and alternates run on their own and pass the check", (card) => {
     for (const answer of [card.solution, ...(card.accepted ?? [])]) {
-      expect(run(card.setup ?? "", answer, card.check!), answer).toBe(true);
+      expect(run(card.setup ?? "", compose(card, answer), card.check!), answer).toBe(true);
     }
   });
 
   it.each(checked)("$id: a wrong answer fails the check", (card) => {
-    expect(run(card.setup ?? "", "pass", card.check!)).toBe(false);
-    expect(run(card.setup ?? "", "not valid python", card.check!)).toBe(false);
+    expect(run(card.setup ?? "", compose(card, "pass"), card.check!)).toBe(false);
+    expect(run(card.setup ?? "", compose(card, "not valid python"), card.check!)).toBe(false);
   });
 });

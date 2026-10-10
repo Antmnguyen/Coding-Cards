@@ -1,3 +1,4 @@
+import { compose } from "../core/compose";
 import type { Card } from "../core/types";
 import type { RunMessage, RunRequest } from "./pyWorker";
 
@@ -33,7 +34,7 @@ export function startRunner(listener: (ready: boolean) => void) {
 export function runCheck(card: Card, answer: string): Promise<boolean> {
   if (!worker || !ready || !card.check) return Promise.resolve(false);
   const id = nextId++;
-  const req: RunRequest = { id, setup: card.setup ?? "", answer, check: card.check };
+  const req: RunRequest = { id, setup: card.setup ?? "", answer: compose(card, answer), check: card.check };
   return new Promise((resolve) => {
     const done = (ok: boolean) => {
       clearTimeout(timer);

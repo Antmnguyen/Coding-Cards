@@ -1,3 +1,4 @@
+import { givenCode } from "../../core/compose";
 import { useStore } from "../store";
 import { percent, Prompt, repsPerMinute, useKeys } from "../ui";
 
@@ -54,7 +55,7 @@ export function Results() {
                 <p>
                   <Prompt text={card.prompt} />
                 </p>
-                {card.setup && <pre className="dim">{card.setup}</pre>}
+                <pre className="dim">{givenCode(card)}</pre>
                 <pre className="solution">{card.solution}</pre>
                 <p className="explain">{card.explain}</p>
               </div>
