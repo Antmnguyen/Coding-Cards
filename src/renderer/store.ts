@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { cards, tags as allTags } from "../cards";
-import { pickWeighted, record } from "../core/history";
+import { drawSession, record } from "../core/history";
 import { answer, createQueue, type QueueState } from "../core/queue";
 import type { Card, History, Settings } from "../core/types";
 import { startRunner } from "../runner/runner";
@@ -34,6 +34,7 @@ export interface Session {
 const DEFAULT_SETTINGS: Settings = {
   tags: [],
   length: { kind: "count", n: 25 },
+  levels: [],
   strict: false,
   forceCorrection: false,
 };
@@ -56,6 +57,7 @@ interface State {
 function cleanSettings(raw: unknown): Settings {
   const s = { ...DEFAULT_SETTINGS, ...(raw && typeof raw === "object" ? (raw as Partial<Settings>) : {}) };
   s.tags = Array.isArray(s.tags) ? s.tags.filter((t) => allTags.includes(t)) : [];
+  s.levels = Array.isArray(s.levels) ? s.levels.filter((l) => [1, 2, 3].includes(l)) : [];
   return s;
 }
 
@@ -86,10 +88,14 @@ export const useStore = create<State>((set, get) => ({
   start() {
     const { settings, history } = get();
     const now = Date.now();
-    const pool = settings.tags.length ? cards.filter((c) => c.tags.some((t) => settings.tags.includes(t))) : cards;
+    const pool = cards.filter(
+      (c) =>
+        (settings.tags.length === 0 || c.tags.some((t) => settings.tags.includes(t))) &&
+        (settings.levels.length === 0 || settings.levels.includes(c.level)),
+    );
     // A timed blitz draws the whole pool in weighted order and stops on the clock.
     const size = settings.length.kind === "count" ? settings.length.n : pool.length;
-    const picked = pickWeighted(pool, history, size, now);
+    const picked = drawSession(pool, history, size, now);
     if (picked.length === 0) return;
     set({
       screen: "drill",
@@ -128,7 +134,6 @@ export const useStore = create<State>((set, get) => ({
       },
     });
     void window.api.write("history", nextHistory);
-    if (get().session!.q.queue.length === 0) get().finish();
   },
 
   finish() {

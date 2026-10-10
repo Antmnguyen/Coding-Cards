@@ -4,14 +4,27 @@ export interface Card {
   id: string;
   language: Language;
   tags: string[];
+  /** The piece of syntax this card drills. Variants of one skill share it. */
+  skill: string;
+  /** 1 = bare basics, 2 = everyday LeetCode, 3 = tricky or rare. */
+  level: 1 | 2 | 3;
+  /** Says what every name in the given code is, then what to do. */
   prompt: string;
+  /** The given code: shown on the card with example values, and run before the answer. */
+  setup?: string;
+  /**
+   * Code the answer is placed into at `{answer}`, for lines that cannot run alone
+   * (a loop header needs a body). Shown on the card after the given code.
+   */
+  template?: string;
+  /** What a right answer produces for the given code, in plain words. Shown on the card. */
+  expect: string;
+  /** Must run on its own after the given code, so it includes any import the given code lacks. */
   solution: string;
   /** Alternate answers that count as correct without running anything. */
   accepted?: string[];
-  /** One line shown on a miss, naming the trap. */
+  /** One line shown after answering, naming the trap. */
   explain: string;
-  /** Code run before the answer when run-checking. */
-  setup?: string;
   /** Expression that must be truthy after the answer runs. `_` is the answer's value. */
   check?: string;
 }
@@ -36,6 +49,8 @@ export interface Settings {
   /** Empty means every topic. */
   tags: string[];
   length: SessionLength;
+  /** Empty means every level. */
+  levels: number[];
   strict: boolean;
   forceCorrection: boolean;
 }

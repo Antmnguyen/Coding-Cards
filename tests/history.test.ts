@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pickWeighted, record, weight } from "../src/core/history";
+import { drawSession, pickWeighted, record, tagStats, weight } from "../src/core/history";
 import type { Card, History } from "../src/core/types";
 
 const NOW = 1_800_000_000_000;
@@ -52,8 +52,11 @@ describe("pickWeighted", () => {
   const deck: Card[] = ["a", "b", "c", "d"].map((id) => ({
     id,
     language: "python",
+    skill: id,
+    level: 2,
     tags: ["t"],
     prompt: "",
+    expect: "",
     solution: "",
     explain: "",
   }));
@@ -70,5 +73,52 @@ describe("pickWeighted", () => {
     let first = 0;
     for (let i = 0; i < 200; i++) if (pickWeighted(deck, history, 1, NOW)[0]!.id === "a") first++;
     expect(first).toBeGreaterThan(150);
+  });
+});
+
+describe("drawSession", () => {
+  const variant = (id: string, skill: string): Card => ({
+    id,
+    language: "python",
+    tags: ["t"],
+    skill,
+    level: 2,
+    prompt: "",
+    expect: "",
+    solution: "",
+    explain: "",
+  });
+  const deck = [variant("a1", "a"), variant("a2", "a"), variant("a3", "a"), variant("b1", "b"), variant("c1", "c")];
+
+  it("shows every skill once before repeating any", () => {
+    for (let i = 0; i < 50; i++) {
+      const first = drawSession(deck, {}, 3, NOW).map((c) => c.skill);
+      expect(new Set(first).size).toBe(3);
+    }
+    expect(drawSession(deck, {}, 10, NOW)).toHaveLength(5);
+  });
+
+  it("brings sibling variants forward after a miss on one of them", () => {
+    let history: History = record({}, "a1", false, 1000, NOW);
+    for (let i = 0; i < 6; i++) history = record(history, "b1", true, 1000, NOW);
+    const withMiss = deck.map((c) => (c.id === "a2" ? 1 : 0));
+    let a2First = 0;
+    let plain = 0;
+    for (let i = 0; i < 400; i++) {
+      if (pickWeighted([deck[1]!, deck[4]!, deck[0]!], history, 1, NOW)[0]!.id === "a2") a2First++;
+      if (pickWeighted([deck[1]!, deck[4]!], {}, 1, NOW)[0]!.id === "a2") plain++;
+    }
+    expect(withMiss).toContain(1);
+    expect(a2First).toBeGreaterThan(0);
+    expect(plain).toBeGreaterThan(0);
+  });
+});
+
+describe("tagStats", () => {
+  it("counts a card as mastered once its streak reaches 2", () => {
+    const card: Card = { id: "c", language: "python", tags: ["t"], skill: "c", level: 1, prompt: "", expect: "", solution: "", explain: "" };
+    expect(tagStats([card], replay([true]))[0]!.mastered).toBe(0);
+    expect(tagStats([card], replay([true, true]))[0]!.mastered).toBe(1);
+    expect(tagStats([card], replay([true, true, false]))[0]!.mastered).toBe(0);
   });
 });
