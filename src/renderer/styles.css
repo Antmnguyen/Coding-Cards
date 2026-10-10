@@ -1,0 +1,312 @@
+:root {
+  --bg: #262a33;
+  --panel: #1f232b;
+  --text: #d5d8de;
+  --dim: #6b7280;
+  --accent: #e2b714;
+  --ok: #7ec77e;
+  --bad: #e5606c;
+  color-scheme: dark;
+  font-family: "JetBrains Mono", "Roboto Mono", Consolas, monospace;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  user-select: none;
+}
+
+main {
+  min-height: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 32px 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+  color: var(--accent);
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--dim);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+code,
+pre {
+  font: inherit;
+}
+
+code {
+  color: var(--accent);
+}
+
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  font-size: 12px;
+  color: var(--dim);
+  background: var(--bg);
+}
+
+footer .ok {
+  color: var(--ok);
+}
+
+/* Home */
+
+.config {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.config-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.config-name {
+  width: 72px;
+  flex: none;
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--dim);
+  border: 1px solid transparent;
+}
+
+.chip:hover {
+  color: var(--text);
+}
+
+.chip.active {
+  color: var(--accent);
+}
+
+.chip.focused {
+  border-color: var(--dim);
+}
+
+.start {
+  align-self: center;
+  padding: 10px 24px;
+  border-radius: 8px;
+  color: var(--bg);
+  background: var(--accent);
+  font-weight: 700;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 32px;
+  font-size: 13px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 3px 0;
+  vertical-align: top;
+}
+
+td.num {
+  width: 1%;
+  padding-left: 16px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.dim {
+  color: var(--dim);
+}
+
+/* Drill */
+
+.hud {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.hud b {
+  font-size: 20px;
+  color: var(--accent);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tag {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.prompt {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.5;
+}
+
+.answer {
+  width: 100%;
+  padding: 12px 14px;
+  resize: none;
+  overflow: hidden;
+  font: inherit;
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--panel);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  outline: none;
+  user-select: text;
+}
+
+.answer::placeholder {
+  color: var(--dim);
+  font-size: 14px;
+}
+
+.answer.flash-ok {
+  border-color: var(--ok);
+}
+
+.answer.flash-bad {
+  border-color: var(--bad);
+}
+
+.miss {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 18px;
+}
+
+.given {
+  color: var(--bad);
+  text-decoration: line-through;
+}
+
+.solution {
+  color: var(--ok);
+}
+
+.explain {
+  margin: 0;
+  font-size: 14px;
+  color: var(--dim);
+}
+
+/* Results */
+
+.results {
+  justify-content: flex-start;
+}
+
+.summary {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 24px 0;
+}
+
+.summary div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.summary b {
+  font-size: 32px;
+  color: var(--accent);
+}
+
+.missed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.missed-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--panel);
+  font-size: 14px;
+}
+
+.missed-card p {
+  margin: 0;
+}

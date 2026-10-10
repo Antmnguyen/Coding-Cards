@@ -1,0 +1,73 @@
+import { topic } from "../topic";
+
+export const heaps = topic("python", "heaps", [
+  {
+    id: "heap-import",
+    prompt: "Import the heap module",
+    solution: "import heapq",
+    explain: "The module is heapq, not heap.",
+    check: 'heapq.__name__ == "heapq"',
+  },
+  {
+    id: "heap-heapify",
+    prompt: "Turn list `h` into a min-heap in place",
+    solution: "heapq.heapify(h)",
+    explain: "heapify works in place and returns None; a heap is a plain list.",
+    setup: "import heapq; h = [3, 1, 2]",
+    check: "h[0] == 1 and sorted(h) == [1, 2, 3]",
+  },
+  {
+    id: "heap-push",
+    prompt: "Push `x` onto heap `h`",
+    solution: "heapq.heappush(h, x)",
+    explain: "heapq.heappush(h, x), not h.push(x): the heap comes first.",
+    setup: "import heapq; h = [1, 3]; x = 0",
+    check: "h[0] == 0 and len(h) == 3",
+  },
+  {
+    id: "heap-pop",
+    prompt: "Pop the smallest item from heap `h`",
+    solution: "heapq.heappop(h)",
+    explain: "heapq.heappop(h), not h.heappop().",
+    setup: "import heapq; h = [1, 3, 2]",
+    check: "_ == 1 and sorted(h) == [2, 3]",
+  },
+  {
+    id: "heap-peek",
+    prompt: "Peek at the smallest item of heap `h`",
+    solution: "h[0]",
+    explain: "The minimum is always at index 0; there is no peek().",
+    setup: "h = [1, 3, 2]",
+    check: "_ == 1 and len(h) == 3",
+  },
+  {
+    id: "heap-max-push",
+    prompt: "Push `x` onto max-heap `h` (negate trick)",
+    solution: "heapq.heappush(h, -x)",
+    explain: "heapq is min-only: store negatives and negate again when popping.",
+    setup: "import heapq; h = []; x = 5",
+    check: "h == [-5]",
+  },
+  {
+    id: "heap-push-tuple",
+    prompt: "Push the tuple (`dist`, `x`, `y`) onto heap `h`",
+    solution: "heapq.heappush(h, (dist, x, y))",
+    explain: "Double parentheses: the tuple is ONE argument. Ordered by its first item.",
+    setup: "import heapq; h = []; dist = 5; x = 1; y = 2",
+    check: "h == [(5, 1, 2)]",
+  },
+  {
+    id: "heap-nlargest",
+    prompt: "The `k` largest items of `a`",
+    solution: "heapq.nlargest(k, a)",
+    explain: "The count comes first, then the iterable.",
+    setup: "import heapq; a = [1, 5, 3, 4]; k = 2",
+    check: "_ == [5, 4]",
+  },
+  {
+    id: "heap-while-over-k",
+    prompt: "Loop while heap `h` has more than `k` items (header line only)",
+    solution: "while len(h) > k:",
+    explain: "Compare len(h), not the list itself.",
+  },
+]);
