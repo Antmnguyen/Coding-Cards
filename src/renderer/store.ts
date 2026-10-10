@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { cards, tags as allTags } from "../cards";
 import { drawSession, record } from "../core/history";
+import { sessionPool } from "../core/pool";
 import { answer, createQueue, type QueueState } from "../core/queue";
 import type { Card, History, Settings } from "../core/types";
 import { startRunner } from "../runner/runner";
@@ -35,6 +36,7 @@ const DEFAULT_SETTINGS: Settings = {
   tags: [],
   length: { kind: "count", n: 25 },
   levels: [],
+  thinking: false,
   strict: false,
   forceCorrection: false,
 };
@@ -58,6 +60,7 @@ function cleanSettings(raw: unknown): Settings {
   const s = { ...DEFAULT_SETTINGS, ...(raw && typeof raw === "object" ? (raw as Partial<Settings>) : {}) };
   s.tags = Array.isArray(s.tags) ? s.tags.filter((t) => allTags.includes(t)) : [];
   s.levels = Array.isArray(s.levels) ? s.levels.filter((l) => [1, 2, 3].includes(l)) : [];
+  s.thinking = s.thinking === true;
   return s;
 }
 
@@ -88,11 +91,7 @@ export const useStore = create<State>((set, get) => ({
   start() {
     const { settings, history } = get();
     const now = Date.now();
-    const pool = cards.filter(
-      (c) =>
-        (settings.tags.length === 0 || c.tags.some((t) => settings.tags.includes(t))) &&
-        (settings.levels.length === 0 || settings.levels.includes(c.level)),
-    );
+    const pool = sessionPool(cards, settings);
     // A timed blitz draws the whole pool in weighted order and stops on the clock.
     const size = settings.length.kind === "count" ? settings.length.n : pool.length;
     const picked = drawSession(pool, history, size, now);

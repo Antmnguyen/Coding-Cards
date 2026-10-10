@@ -1,4 +1,5 @@
 import type { Card } from "../core/types";
+import { THINK_IDS } from "./thinking";
 import { TRAP_IDS, TRAPS_TAG } from "./traps";
 import { basics, conditionals, conversion } from "./python/basics";
 import { calling } from "./python/calling";
@@ -100,7 +101,9 @@ const decks: Card[] = [
   ...backtrackingMore,
 ];
 
-export const cards: Card[] = decks.map((c) => (TRAP_IDS.has(c.id) ? { ...c, tags: [...c.tags, TRAPS_TAG] } : c));
+export const cards: Card[] = decks
+  .map((c) => (TRAP_IDS.has(c.id) ? { ...c, tags: [...c.tags, TRAPS_TAG] } : c))
+  .map((c) => (THINK_IDS.has(c.id) ? { ...c, kind: "think" as const } : c));
 
 /** Topics as laid out on the Home screen. Every topic belongs to exactly one group. */
 export const groups: { name: string; topics: string[] }[] = [

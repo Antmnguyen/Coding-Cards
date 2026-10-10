@@ -18,7 +18,7 @@ const LENGTHS: { label: string; value: SessionLength }[] = [
 const sameLength = (a: SessionLength, b: SessionLength) =>
   a.kind === "count" ? b.kind === "count" && a.n === b.n : b.kind === "timed" && a.seconds === b.seconds;
 
-const LEVELS = ["1 basics", "2 everyday", "3 tricky"];
+const LEVELS = ["1 basics", "2 everyday", "3 rare"];
 
 const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
 
@@ -65,6 +65,7 @@ export function Home() {
     {
       name: "options",
       items: [
+        { label: "thinking cards", active: settings.thinking, run: () => update({ thinking: !settings.thinking }) },
         { label: "strict match", active: settings.strict, run: () => update({ strict: !settings.strict }) },
         {
           label: "forced correction",
@@ -92,8 +93,10 @@ export function Home() {
     e.preventDefault();
   });
 
-  const stats = useMemo(() => tagStats(cards, history), [history]);
-  const worst = useMemo(() => worstCards(cards, history, 5), [history]);
+  // Thinking cards stay out of the numbers unless they are being drilled.
+  const shown = useMemo(() => cards.filter((c) => settings.thinking || c.kind === "recall"), [settings.thinking]);
+  const stats = useMemo(() => tagStats(shown, history), [shown, history]);
+  const worst = useMemo(() => worstCards(shown, history, 5), [shown, history]);
   const hasHistory = stats.some((s) => s.attempts > 0);
 
   return (

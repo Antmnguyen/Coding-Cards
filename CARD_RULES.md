@@ -3,7 +3,37 @@
 Every card in `src/cards/` follows these rules. `tests/cards.test.ts` enforces the ones marked **(tested)**.
 
 ## What a card is
-One small piece of Python syntax: a method call, an initialisation, a state update, a shortcut. Not a LeetCode problem and not an algorithm. The answer is 1 line where possible and never more than 3 **(tested)**.
+This is a syntax builder, not a logic builder. A card is read and typed in a few seconds: you either remember the syntax or you don't. One small piece of Python syntax: a method call, an initialisation, a state update, a shortcut. Not a LeetCode problem and not an algorithm. The answer is 1 line where possible and never more than 3 **(tested)**.
+
+## Two ideas at most
+**A recall card stacks at most 2 ideas (tested).** A card with 3 or more is a **thinking** card: it is listed in `src/cards/thinking.ts`, keeps its topic, and is left out of sessions unless "thinking cards" is switched on at Home. New cards are written as recall cards; do not write new thinking cards.
+
+An idea is one piece of syntax you have to remember:
+
+| Counts as 1 idea | Examples |
+|---|---|
+| a function or method call | `sorted(...)`, `.sort()`, `heapq.heappush(...)`, `"".join(...)`, an f-string |
+| a keyword argument, with its value | `reverse=True`, `key=len`, `key=lambda p: p.x`, `key=attrgetter("x")` |
+| a slice, or a negative or computed index | `[:3]`, `[::-1]`, `[-1]`, `[i + 1]` |
+| a comprehension clause | the `for` is 1, an `if` filter is 1 more, a second `for` is 1 more |
+| a conditional expression | `a if cond else b` |
+| `and` / `or` | each one |
+| a statement header | `for ... in ...:`, `while ...:`, `if ...:`, `def ...:`, `class ...:`, a decorator line |
+| each statement | every line is at least 1 (an import line is free) |
+| a tuple key, a negation | `lambda w: (len(w), w)`, `-x` |
+
+Free: variable names, operators, and reaching into the item you were given inside a lambda (`p.y`, `p[1]`). `range(len(x))` is typed as one unit and counts once.
+
+| Answer | Ideas | |
+|---|---|---|
+| `sorted(nums, reverse=True)` | 2 | recall |
+| `sorted(points, key=lambda p: p.x)` | 2 | recall |
+| `if k not in d:` / `d[k] = []` | 2 | recall |
+| `points.sort(key=lambda p: p.y, reverse=True)` | 3 | thinking |
+| `"".join(sorted(s, reverse=True))` | 3 | thinking |
+| `for r in range(rows):` / `for c in range(cols):` | 4 | thinking |
+
+`src/core/ideas.ts` does the counting and `node scripts/audit.mjs <topic>` prints the count for every card in a topic. If the counter is wrong about a card, put the count made by hand in `COUNTED_BY_HAND` in `src/cards/thinking.ts`. Keep that list short.
 
 ## The card must give all the context
 The reader should never have to guess what a name is.
@@ -43,10 +73,12 @@ check: "out == [0, 1, 2, 3]",
 
 ## Skills, variants and levels
 - **`skill()`** groups cards that drill the same syntax on different data. Card ids are `<skill>--<variant>`. A session shows one variant per skill before repeating a skill.
+- **A variant is the same syntax on different data**: a list of ints, of strings, of tuples, of objects. The only part of the answer that changes is how the value is reached (`x`, `p[1]`, `p.y`). A variant never adds an idea: adding `reverse=True`, a tuple key or a slice makes a different skill, and only if it still fits in 2 ideas.
 - A variant must change what you type or where people slip. Changing only the example numbers is not a variant.
 - Vary names across variants (`nums`, `a`, `s`, `words`, `grid`) so a card cannot be recognised by its variable name.
 - No two cards may have the same prompt and given code **(tested)**.
-- **`level`**: 1 = bare basics, 2 = everyday LeetCode, 3 = tricky or rare. Set per skill.
+- **`level`** is how common the syntax is, not how hard the card is: 1 = bare basics, 2 = everyday LeetCode, 3 = rare. Set per skill.
+- **`kind`** is `"recall"` unless the card id is in `THINK_IDS` in `src/cards/thinking.ts`, which makes it `"think"`. Cards are moved by editing that list, never by editing the card.
 - Standard classes (`ListNode`, `TreeNode`, `Point`) come from `src/cards/python/given.ts`, so every card shows the same definition.
 
 ## After answering
