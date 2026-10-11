@@ -19,6 +19,8 @@ export function Drill() {
   const recordAnswer = useStore((s) => s.recordAnswer);
   const finish = useStore((s) => s.finish);
   const goHome = useStore((s) => s.goHome);
+  const openBrowse = useStore((s) => s.openBrowse);
+  const startFocused = useStore((s) => s.startFocused);
 
   const [input, setInput] = useState("");
   const [phase, setPhase] = useState<Phase>("answer");
@@ -52,8 +54,29 @@ export function Drill() {
     return () => clearTimeout(timer);
   }, [flash]);
 
+  // Card text can be selected and copied, which takes focus off the editor.
+  // A click that selects nothing gives it straight back; so does the next key that is not a shortcut.
+  useEffect(() => {
+    const onMouseUp = () => {
+      if (window.getSelection()?.isCollapsed !== false) inputRef.current?.focus();
+    };
+    document.addEventListener("mouseup", onMouseUp);
+    return () => document.removeEventListener("mouseup", onMouseUp);
+  }, []);
+
   useKeys((e) => {
-    if (e.key === "Escape") goHome();
+    const modifier = e.ctrlKey || e.metaKey || ["Control", "Shift", "Alt", "Meta"].includes(e.key);
+    if (document.activeElement !== inputRef.current && !modifier && e.key !== "Escape") {
+      inputRef.current?.focus();
+      if (e.key === "Enter" && card) {
+        e.preventDefault();
+        void submit(card);
+      }
+      return;
+    }
+    if (e.key !== "Escape") return;
+    if (session.focus) openBrowse();
+    else goHome();
   });
 
   // The queue has already moved on while an answer is revealed, so keep showing that card.
@@ -86,7 +109,7 @@ export function Drill() {
 
     const ms = Date.now() - shownAt.current;
     let ok = matches(card, input, settings.strict);
-    if (!ok && !settings.strict && card.check && pyReady) {
+    if (!ok && !settings.strict && card.check) {
       setPhase("checking");
       ok = await runCheck(card, input);
       if (!alive.current) return;
@@ -107,6 +130,12 @@ export function Drill() {
 
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     const el = e.currentTarget;
+    // Ctrl+F drops the session and drills this card's pattern and its variants.
+    if (e.ctrlKey && e.key.toLowerCase() === "f") {
+      e.preventDefault();
+      if (phase !== "checking") startFocused([card!.skill]);
+      return;
+    }
     if (e.key === "Tab") {
       e.preventDefault();
       return insert(el, INDENT);
@@ -128,6 +157,7 @@ export function Drill() {
 
   return (
     <main className="drill">
+      {session.focus && <div className="focus-line">focused: {session.focus.label}</div>}
       <header className="hud">
         <span>
           <b>{remaining}</b> left
@@ -180,15 +210,15 @@ export function Drill() {
           }
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
-          onBlur={() => inputRef.current?.focus()}
         />
       </section>
 
       <footer>
         <span>enter submit</span>
         <span>shift+enter new line</span>
+        <span>ctrl+f focus pattern</span>
         <span>esc quit</span>
-        <span>{settings.strict ? "strict" : pyReady ? "smart + run" : "smart"}</span>
+        <span>{settings.strict ? "strict" : pyReady ? "smart + run" : "smart + run (python loading)"}</span>
       </footer>
     </main>
   );

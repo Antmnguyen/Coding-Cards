@@ -2,7 +2,8 @@ import { create } from "zustand";
 import { cards, tags as allTags } from "../cards";
 import { drawSession, record } from "../core/history";
 import { sessionPool } from "../core/pool";
-import { answer, createQueue, type QueueState } from "../core/queue";
+import { answer, createQueue, MASTERY_STREAK, type QueueState } from "../core/queue";
+import { buildPatterns, focusCards, type PatternFilters } from "../core/search";
 import type { Card, History, Settings } from "../core/types";
 import { startRunner } from "../runner/runner";
 
@@ -30,20 +31,33 @@ export interface Session {
   bestStreak: number;
   /** Ids of cards missed at least once, in the order they were first missed. */
   missed: string[];
+  /** Correct answers in a row that retire a card. */
+  mastery: number;
+  /** Set for a focused drill on chosen patterns. */
+  focus: { skills: string[]; label: string } | null;
 }
+
+/** What the pattern browser is showing; kept so it is unchanged after a drill. */
+export interface BrowseState extends PatternFilters {
+  query: string;
+}
+
+export const FOCUS_ROUNDS = [3, 5, 10];
 
 const DEFAULT_SETTINGS: Settings = {
   tags: [],
   length: { kind: "count", n: 25 },
   levels: [],
   thinking: false,
+  focusRounds: 3,
   strict: false,
   forceCorrection: false,
 };
 
 interface State {
   loaded: boolean;
-  screen: "home" | "drill" | "results";
+  screen: "home" | "browse" | "drill" | "results";
+  browse: BrowseState;
   settings: Settings;
   history: History;
   pyReady: boolean;
@@ -51,6 +65,10 @@ interface State {
   init(): Promise<void>;
   updateSettings(patch: Partial<Settings>): void;
   start(): void;
+  /** Drills every variant of the given patterns until each is right several times in a row. */
+  startFocused(skillIds: string[]): void;
+  openBrowse(): void;
+  updateBrowse(patch: Partial<BrowseState>): void;
   recordAnswer(id: string, correct: boolean, ms: number): void;
   finish(): void;
   goHome(): void;
@@ -61,12 +79,14 @@ function cleanSettings(raw: unknown): Settings {
   s.tags = Array.isArray(s.tags) ? s.tags.filter((t) => allTags.includes(t)) : [];
   s.levels = Array.isArray(s.levels) ? s.levels.filter((l) => [1, 2, 3].includes(l)) : [];
   s.thinking = s.thinking === true;
+  s.focusRounds = FOCUS_ROUNDS.includes(s.focusRounds) ? s.focusRounds : DEFAULT_SETTINGS.focusRounds;
   return s;
 }
 
 export const useStore = create<State>((set, get) => ({
   loaded: false,
   screen: "home",
+  browse: { query: "", topics: [], levels: [], statuses: [] },
   settings: DEFAULT_SETTINGS,
   history: {},
   pyReady: false,
@@ -111,8 +131,50 @@ export const useStore = create<State>((set, get) => ({
         streak: 0,
         bestStreak: 0,
         missed: [],
+        mastery: MASTERY_STREAK,
+        focus: null,
       },
     });
+  },
+
+  startFocused(skillIds) {
+    const { settings } = get();
+    const now = Date.now();
+    const pool = sessionPool(cards, { tags: [], levels: [], thinking: settings.thinking });
+    const { cards: picked, padded } = focusCards(buildPatterns(pool), skillIds);
+    if (picked.length === 0) return;
+    for (let i = picked.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [picked[i], picked[j]] = [picked[j]!, picked[i]!];
+    }
+    const name = skillIds.length === 1 ? skillIds[0]! : `${skillIds.length} patterns`;
+    set({
+      screen: "drill",
+      session: {
+        id: now,
+        cards: Object.fromEntries(picked.map((c) => [c.id, c])),
+        q: createQueue(picked.map((c) => c.id)),
+        total: picked.length,
+        startedAt: now,
+        endsAt: null,
+        finishedAt: null,
+        answers: 0,
+        correct: 0,
+        streak: 0,
+        bestStreak: 0,
+        missed: [],
+        mastery: settings.focusRounds,
+        focus: { skills: skillIds, label: `${name}${padded ? " + related" : ""} (${picked.length} cards, ${settings.focusRounds} in a row)` },
+      },
+    });
+  },
+
+  openBrowse() {
+    set({ screen: "browse", session: null });
+  },
+
+  updateBrowse(patch) {
+    set({ browse: { ...get().browse, ...patch } });
   },
 
   recordAnswer(id, correct, ms) {
@@ -124,7 +186,7 @@ export const useStore = create<State>((set, get) => ({
       history: nextHistory,
       session: {
         ...session,
-        q: answer(session.q, correct),
+        q: answer(session.q, correct, Math.random, session.mastery),
         answers: session.answers + 1,
         correct: session.correct + (correct ? 1 : 0),
         streak,

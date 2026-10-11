@@ -34,6 +34,7 @@ export function Home() {
   const pyReady = useStore((s) => s.pyReady);
   const update = useStore((s) => s.updateSettings);
   const start = useStore((s) => s.start);
+  const openBrowse = useStore((s) => s.openBrowse);
   const [focus, setFocus] = useState({ row: 0, col: 0 });
 
   const rows: { name: string; items: Item[] }[] = [
@@ -84,6 +85,7 @@ export function Home() {
       setFocus({ row: r, col: dRow ? Math.min(focus.col, len - 1) : (focus.col + dCol + len) % len });
     };
     if (e.key === "Enter") start();
+    else if (e.key === "/") openBrowse();
     else if (e.key === " ") row.items[focus.col]!.run();
     else if (e.key === "ArrowRight") move(0, 1);
     else if (e.key === "ArrowLeft") move(0, -1);
@@ -127,9 +129,14 @@ export function Home() {
         ))}
       </div>
 
-      <button className="start" tabIndex={-1} onClick={start}>
-        enter to start
-      </button>
+      <div className="actions">
+        <button className="start" tabIndex={-1} onClick={start}>
+          enter to start
+        </button>
+        <button className="start secondary" tabIndex={-1} onClick={openBrowse}>
+          / browse patterns
+        </button>
+      </div>
 
       {hasHistory && (
         <section className="stats">
@@ -173,6 +180,7 @@ export function Home() {
         <span>arrows move</span>
         <span>space select</span>
         <span>enter start</span>
+        <span>/ browse patterns</span>
         <span className={pyReady ? "ok" : ""}>{pyReady ? "python ready" : "python loading"}</span>
       </footer>
     </main>

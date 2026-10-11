@@ -5,14 +5,20 @@ import { percent, Prompt, repsPerMinute, useKeys } from "../ui";
 export function Results() {
   const session = useStore((s) => s.session)!;
   const start = useStore((s) => s.start);
+  const startFocused = useStore((s) => s.startFocused);
   const goHome = useStore((s) => s.goHome);
+  const openBrowse = useStore((s) => s.openBrowse);
+  const focus = session.focus;
 
   useKeys((e) => {
     if (e.key === "Enter" || e.key === "Tab") {
       e.preventDefault();
-      start();
+      // A focused drill repeats the same patterns and returns to the browser.
+      if (focus) startFocused(focus.skills);
+      else start();
     } else if (e.key === "Escape") {
-      goHome();
+      if (focus) openBrowse();
+      else goHome();
     }
   });
 
@@ -66,7 +72,7 @@ export function Results() {
 
       <footer>
         <span>enter again</span>
-        <span>esc home</span>
+        <span>{focus ? "esc patterns" : "esc home"}</span>
       </footer>
     </main>
   );

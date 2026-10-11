@@ -3,6 +3,7 @@ import "@fontsource/jetbrains-mono/latin-700.css";
 import "./styles.css";
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
+import { Browse } from "./screens/Browse";
 import { Drill } from "./screens/Drill";
 import { Home } from "./screens/Home";
 import { Results } from "./screens/Results";
@@ -21,6 +22,7 @@ function App() {
   if (!loaded) return null;
   if (screen === "drill") return <Drill key={sessionId} />;
   if (screen === "results") return <Results />;
+  if (screen === "browse") return <Browse />;
   return <Home />;
 }
 

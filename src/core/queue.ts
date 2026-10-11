@@ -19,9 +19,9 @@ export function createQueue(ids: string[]): QueueState {
 /**
  * Applies the answer for the head card.
  * A miss comes back 2-4 cards later; a correct answer goes to the back until
- * the card has been answered correctly MASTERY_STREAK times in a row.
+ * the card has been answered correctly `target` times in a row.
  */
-export function answer(state: QueueState, correct: boolean, rng: Rng = Math.random): QueueState {
+export function answer(state: QueueState, correct: boolean, rng: Rng = Math.random, target = MASTERY_STREAK): QueueState {
   const [id, ...rest] = state.queue;
   if (id === undefined) return state;
 
@@ -33,7 +33,7 @@ export function answer(state: QueueState, correct: boolean, rng: Rng = Math.rand
 
   const streak = (state.streaks[id] ?? 0) + 1;
   const streaks = { ...state.streaks, [id]: streak };
-  if (streak >= MASTERY_STREAK) {
+  if (streak >= target) {
     return { queue: rest, streaks, mastered: [...state.mastered, id] };
   }
   return { ...state, queue: [...rest, id], streaks };

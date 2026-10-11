@@ -1,81 +1,82 @@
-# Plan: search and focused practice
+# Plan: browse patterns, search, and focused practice
 
-Goal: you make a mistake while doing LeetCode (say you wrote `s.append(c)` on a string), you open the app, type what you got wrong, and within a few seconds you are drilling that exact piece of syntax and all its variants, a dozen or more times.
+Goal: pick one exact pattern and master it and its variants. Two ways in:
 
-## What you will be able to do
+- **You know what you got wrong.** You wrote `s.append(c)` on a string. Open the app, type `append`, and within a few seconds you are drilling that pattern.
+- **You want to look.** Scroll the full list of patterns, narrow it with filters (topic, level, how well you know it), and pick one.
 
-1. **Search from Home.** Press `/` (or just start typing) and a search line appears. Results update on every keystroke.
-2. **Search by the mistake, not only the answer.** Typing `append`, `string append`, `s.append`, `+=`, `heappop`, `sort returns none` or `{} set` all find the right skill.
-3. **Pick a result and drill it.** Arrow keys move through results, Enter starts a focused drill on the highlighted skill. `Ctrl+Enter` drills every result at once.
-4. **Drill it many times.** A focused drill cycles through every variant of the skill and repeats until you have got each one right several times in a row. The number of rounds is a setting: 3, 5 or 10.
-5. **Jump to a focused drill from a miss.** In a normal session, when a card is marked wrong, pressing `F` on the reveal screen starts a focused drill on that card's skill, then returns you to the session.
-6. **Keep a "my mistakes" list.** Pressing `P` on a search result or on a reveal pins that skill. A `pinned` chip on Home drills everything you have pinned.
+A **pattern** is a skill: one piece of syntax plus its data variants (`sort-key` on strings, pairs, objects). There are about 365 of them.
+
+## What you can do
+
+1. **Open the pattern browser from Home** with `/` or the `browse patterns` button.
+2. **Scroll every pattern.** One line per pattern: topic, name, an example answer, number of variants, how many you have mastered.
+3. **Filter the list** with chips: topic, level (1 basics, 2 everyday, 3 rare), status (new, weak, learning, mastered). Filters combine with each other and with the search text.
+4. **Search by typing.** Results update on every keystroke. Typing `append`, `key=lambda`, `[::-1]`, `heappop`, `sorting reverse` or `returns none` all work.
+5. **Drill one pattern.** Enter on the highlighted line starts a focused drill on that pattern and all its variants.
+6. **Drill everything listed.** `Ctrl+Enter` drills every pattern currently in the list, so "all weak sorting patterns" is two filters and one key.
+7. **Jump from a card to its pattern.** On any revealed card, `Ctrl+F` starts a focused drill on that card's pattern.
 
 ## How search works
 
-Each card is searched across these fields, with this priority:
+Each pattern is searched across the text of all its cards:
 
-| Priority | Field | Why |
+| Weight | Field | Why |
 |---|---|---|
-| 1 | `mistakes` (new, see below) | What people actually type wrong: `s.append(c)`, `h.push(x)`, `nums.length` |
-| 2 | `solution` and `accepted` | The right syntax: `path += c` |
-| 3 | `explain` | Already names the trap in words: "Strings have no append(); += builds a new string." |
-| 4 | `prompt`, skill id, topic | Plain-language description: "add a character to the end of a string" |
+| 3 | `solution` and `accepted` | The syntax itself: `path += c` |
+| 2 | `explain` | Names the trap in words: "Strings have no append(); += builds a new string." |
+| 1 | `prompt`, pattern name, topic | Plain-language description |
 
-- **Results are grouped by skill**, not by card, so 10 variants show as one line with "10 variants". Each line shows the topic, one example solution, and your mastery for that skill.
-- **Code-aware matching.** The query is split on spaces; symbols such as `+=`, `[::-1]`, `//`, `.append(` are matched literally and are not stripped out. Whitespace inside code is ignored, the same way the answer checker ignores it.
-- **Every word must match somewhere** in the card, in any field. `string append` matches a card whose prompt says "string" and whose explanation says "append".
-- **No external library.** 1,447 cards is small enough to scan on every keystroke.
+- **Every word must match somewhere** in the pattern, in any field. `string append` matches a pattern whose prompt says "string" and whose explanation says "append".
+- **Code-aware.** Symbols such as `+=`, `[::-1]`, `//`, `.append(` are matched literally. Case and spaces inside code are ignored, so `key = lambda` finds `key=lambda`.
+- **Ranked** by where the words matched; with no search text the list is in deck order (the order of `CARD_PLAN.md`).
+- **No external library.** The deck is small enough to scan on every keystroke.
+- **Thinking cards** follow the same switch as everywhere else: patterns made only of thinking cards are listed only when `thinking cards` is on.
 
-### New card field: `mistakes`
+## Filters
 
-`explain` often mentions the wrong form, but not reliably and not as code. To make "search by what I typed wrong" dependable, cards get an optional list:
-
-```ts
-mistakes: ["path.append(c)", "path.push(c)", "path.add(c)"]
-```
-
-- It is used only for search; it is never shown on the card and never accepted as an answer.
-- It is set per skill where possible (on the `skill()` base), so all variants inherit it.
-- A test asserts that no entry in `mistakes` passes the card's own check, so a "mistake" can never be a correct answer.
-
-Writing these for all 344 skills is the bulk of the content work. Order: the 97 trap cards first, then level 1, then the rest.
+| Filter | Values | Meaning |
+|---|---|---|
+| topic | all, or any topics | Same topics as Home |
+| level | 1, 2, 3 | How common the syntax is |
+| status | new | no card of the pattern answered yet |
+| | weak | answered, with at least one card whose last answer was a miss |
+| | learning | answered, no card currently missed, not all mastered |
+| | mastered | every card right twice in a row |
+| rounds | 3, 5, 10 | How many times in a row each card must be right in a focused drill |
 
 ## How a focused drill differs from a normal session
 
 | | Normal session | Focused drill |
 |---|---|---|
-| Cards | Weighted draw from the chosen topics | Every variant of the chosen skill or skills |
-| Variants | One per skill before any repeats | All of them, shuffled |
-| Finishes when | Each card is right 2 times in a row | Each card is right N times in a row (3, 5 or 10) |
+| Cards | Weighted draw from the chosen topics | Every variant of the chosen pattern or patterns |
+| Variants | One per pattern before any repeats | All of them, shuffled |
+| Finishes when | Each card is right 2 times in a row | Each card is right N times in a row (3, 5 or 10; default 3) |
 | A miss | Card returns 2 to 4 cards later | Same |
-| History | Recorded | Recorded the same way, so it also lowers how often the skill comes up later |
+| History | Recorded | Recorded the same way |
 
-- **Thin skills.** A skill with one or two variants would show the same card over and over. For those, the drill also pulls in the sibling skills from the same topic section that share the most solution text, and says so on screen ("plus 2 related skills").
-- **Top up the thinnest skills.** As part of this work, list every skill with fewer than 3 variants and add variants to the ones that are common mistakes, so a focused drill has real variety.
+- **Thin patterns.** A pattern with one or two variants would show the same card back to back. For those, the drill adds the neighbouring patterns from the same topic until there are at least 4 cards, and the header says so ("+ related").
+- The drill header shows what is being drilled: `focused: sort-key (6 cards, 3 in a row)`.
+- When it ends, Results shows as usual; Enter repeats the same focused drill, Esc goes back to the browser.
 
-## Screens
+## Screens and keys
 
-- **Home:** a search line above the topic rows. Empty by default and takes no space until used. While it has text, the topic rows are replaced by the results list.
-- **Results list:** one line per skill: topic, skill description, example solution, "n variants", mastery, pinned marker.
-- **Drill:** unchanged, with a header line "focused: str-concat (6 variants, round 2 of 5)".
-- **Reveal:** two new footer hints, `F focus this` and `P pin`.
-
-All of it stays keyboard-only: `/` search, arrows move, Enter drill, `Ctrl+Enter` drill all, `P` pin, Esc clear.
+- **Home:** a `browse patterns` button and `/`.
+- **Browser:** search line on top, filter chips under it, then the scrolling list.
+  - typing searches; `Up`/`Down` move through the list; `Enter` drills the highlighted pattern; `Ctrl+Enter` drills all listed.
+  - `Tab` moves between the search line and the filter chips; on the chips, arrows move and Space toggles, as on Home.
+  - `Esc` clears the search text, or goes Home when it is already empty.
+  - Mouse works too: click a chip, click a line to highlight it, double-click to drill it.
+- **Drill:** unchanged apart from the header line and the `ctrl+f focus pattern` hint.
 
 ## Build order
 
-1. **Search index and matching** in `src/core/search.ts`, as a pure function with tests: query in, ranked skills out. Uses the fields that exist today, so it works before any `mistakes` are written.
-2. **Search UI on Home**: the input, the results list, keyboard handling.
-3. **Focused drill**: a second way to start a session in the store (`startFocused(skillIds, rounds)`), the higher mastery count, the header line, and the related-skills fallback for thin skills.
-4. **`F` and `P` on the reveal screen**, the pinned list saved in settings, and the `pinned` chip.
-5. **`mistakes` field**: type, test, then content for the trap cards.
-6. **`mistakes` for the remaining skills**, and extra variants for thin skills that are common mistakes.
+1. **`src/core/search.ts`**: pure functions with tests. `buildPatterns(cards)`, `patternStatus(pattern, history)`, `searchPatterns(patterns, query, filters, history)`.
+2. **Focused drill**: mastery target per session in `src/core/queue.ts`; `startFocused(skillIds)` in the store with the thin-pattern padding; `focusRounds` setting.
+3. **Browser screen** `src/renderer/screens/Browse.tsx` and the Home entry point.
+4. **Drill header and `Ctrl+F`**, Results returning to the browser.
 
-Steps 1 to 4 are app work and give a usable feature on their own. Steps 5 and 6 are card content and can continue in batches, logged in `CARD_PLAN.md` like the earlier card work.
+Later, not part of this build:
 
-## Decisions for you
-
-1. **Rounds.** Default of 5 correct in a row per card for a focused drill, with 3 and 10 as options. Say if you want a fixed number instead.
-2. **Returning to the session after `F`.** The plan resumes the interrupted session where it left off. The simpler alternative is to end it and go to Home afterwards.
-3. **Scope of `mistakes`.** Trap cards and level 1 only (about 550 cards) covers most real slips; doing all 1,447 is roughly three times the writing.
+5. **`mistakes` field.** An optional list per pattern of wrong forms people type (`path.append(c)`, `h.push(x)`, `nums.length`), searched at the highest weight, never shown and never accepted. A test asserts no mistake passes the card's own check. Content work: trap cards first, then level 1.
+6. **Pinned patterns.** `P` pins a pattern; a `pinned` status filter drills them.

@@ -345,3 +345,146 @@ td.num {
 .missed-card p {
   margin: 0;
 }
+
+/* Home actions */
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.start.secondary {
+  color: var(--accent);
+  background: var(--panel);
+  font-weight: 400;
+}
+
+/* Pattern browser */
+
+.browse {
+  height: 100%;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.search {
+  width: 100%;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 18px;
+  color: var(--text);
+  background: var(--panel);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  outline: none;
+  user-select: text;
+}
+
+.search:focus {
+  border-color: var(--dim);
+}
+
+.search::placeholder {
+  color: var(--dim);
+  font-size: 14px;
+}
+
+.pattern-count {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.patterns {
+  flex: 1;
+  min-height: 120px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.pattern {
+  display: grid;
+  grid-template-columns: 110px 210px 1fr 130px;
+  gap: 12px;
+  align-items: baseline;
+  padding: 5px 12px;
+  font-size: 13px;
+  text-align: left;
+  border-left: 2px solid transparent;
+}
+
+.pattern span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pattern:hover {
+  background: var(--bg);
+}
+
+.pattern.selected {
+  border-left-color: var(--accent);
+  background: var(--bg);
+}
+
+.pattern-topic {
+  color: var(--dim);
+}
+
+.pattern-example {
+  color: var(--accent);
+}
+
+.pattern-status {
+  text-align: right;
+  color: var(--dim);
+}
+
+.pattern-status.weak {
+  color: var(--bad);
+}
+
+.pattern-status.mastered {
+  color: var(--ok);
+}
+
+.pattern-none {
+  padding: 16px;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.focus-line {
+  text-align: center;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.browse .config {
+  padding: 6px 12px;
+}
+
+.browse .chip {
+  padding: 2px 8px;
+  font-size: 12px;
+}
+
+/* Card text, solutions and explanations can be selected and copied. */
+
+.card,
+.missed-list,
+.stats,
+.pattern-example {
+  user-select: text;
+}
+
+.card ::selection,
+.missed-list ::selection,
+.stats ::selection {
+  color: var(--bg);
+  background: var(--accent);
+}

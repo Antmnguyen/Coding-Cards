@@ -55,6 +55,8 @@ export interface Settings {
   levels: number[];
   /** Also draw the "think" cards. Off by default. */
   thinking: boolean;
+  /** Correct answers in a row each card needs in a focused drill. */
+  focusRounds: number;
   strict: boolean;
   forceCorrection: boolean;
 }
