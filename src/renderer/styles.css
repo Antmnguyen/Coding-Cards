@@ -348,6 +348,13 @@ td.num {
 
 /* Home actions */
 
+.mode-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--dim);
+  text-align: center;
+}
+
 .actions {
   display: flex;
   justify-content: center;

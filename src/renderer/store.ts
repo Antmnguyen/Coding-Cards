@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { cards, tags as allTags } from "../cards";
-import { drawSession, record } from "../core/history";
+import { drawSession, drawWeak, record } from "../core/history";
 import { sessionPool } from "../core/pool";
-import { answer, createQueue, MASTERY_STREAK, type QueueState } from "../core/queue";
+import { answer, answerOnce, createQueue, MASTERY_STREAK, type QueueState } from "../core/queue";
 import { buildPatterns, focusCards, type PatternFilters } from "../core/search";
-import type { Card, History, Settings } from "../core/types";
+import type { Card, History, Mode, Settings } from "../core/types";
 import { startRunner } from "../runner/runner";
 
 declare global {
@@ -18,6 +18,7 @@ declare global {
 
 export interface Session {
   id: number;
+  mode: Mode;
   cards: Record<string, Card>;
   q: QueueState;
   total: number;
@@ -43,8 +44,10 @@ export interface BrowseState extends PatternFilters {
 }
 
 export const FOCUS_ROUNDS = [3, 5, 10];
+const MODES: Mode[] = ["standard", "once", "weak"];
 
 const DEFAULT_SETTINGS: Settings = {
+  mode: "standard",
   tags: [],
   length: { kind: "count", n: 25 },
   levels: [],
@@ -78,6 +81,7 @@ function cleanSettings(raw: unknown): Settings {
   const s = { ...DEFAULT_SETTINGS, ...(raw && typeof raw === "object" ? (raw as Partial<Settings>) : {}) };
   s.tags = Array.isArray(s.tags) ? s.tags.filter((t) => allTags.includes(t)) : [];
   s.levels = Array.isArray(s.levels) ? s.levels.filter((l) => [1, 2, 3].includes(l)) : [];
+  s.mode = MODES.includes(s.mode) ? s.mode : DEFAULT_SETTINGS.mode;
   s.thinking = s.thinking === true;
   s.focusRounds = FOCUS_ROUNDS.includes(s.focusRounds) ? s.focusRounds : DEFAULT_SETTINGS.focusRounds;
   return s;
@@ -114,12 +118,13 @@ export const useStore = create<State>((set, get) => ({
     const pool = sessionPool(cards, settings);
     // A timed blitz draws the whole pool in weighted order and stops on the clock.
     const size = settings.length.kind === "count" ? settings.length.n : pool.length;
-    const picked = drawSession(pool, history, size, now);
+    const picked = (settings.mode === "weak" ? drawWeak : drawSession)(pool, history, size, now);
     if (picked.length === 0) return;
     set({
       screen: "drill",
       session: {
         id: now,
+        mode: settings.mode,
         cards: Object.fromEntries(picked.map((c) => [c.id, c])),
         q: createQueue(picked.map((c) => c.id)),
         total: picked.length,
@@ -152,6 +157,7 @@ export const useStore = create<State>((set, get) => ({
       screen: "drill",
       session: {
         id: now,
+        mode: "standard",
         cards: Object.fromEntries(picked.map((c) => [c.id, c])),
         q: createQueue(picked.map((c) => c.id)),
         total: picked.length,
@@ -186,7 +192,10 @@ export const useStore = create<State>((set, get) => ({
       history: nextHistory,
       session: {
         ...session,
-        q: answer(session.q, correct, Math.random, session.mastery),
+        q:
+          session.mode === "once"
+            ? answerOnce(session.q, correct)
+            : answer(session.q, correct, Math.random, session.mastery),
         answers: session.answers + 1,
         correct: session.correct + (correct ? 1 : 0),
         streak,

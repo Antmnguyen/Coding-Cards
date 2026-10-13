@@ -132,7 +132,7 @@ export const sortingRecall = topic("python", "sorting", [
 ]);
 
 export const dictsRecall = topic("python", "dicts", [
-  skill("dict-sort-pieces", 2, { explain: "Sorting a dict sorts its keys; key=d.get orders them by their values." }, [
+  skill("dict-sort-pieces", 2, { tags: ["sorting"], explain: "Sorting a dict sorts its keys; key=d.get orders them by their values." }, [
     v("keys-by-value", "`d` is a dictionary of name to count. Get its keys as a list, ordered by count, smallest first.", 'd = {"a": 3, "b": 1, "c": 2}', 'gives ["b", "c", "a"]', "sorted(d, key=d.get)", '_ == ["b", "c", "a"]', {
       accepted: ["sorted(d, key=lambda k: d[k])"],
       explain: "Pass the method itself: d.get, not d.get().",

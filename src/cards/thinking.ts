@@ -249,6 +249,171 @@ export const THINK_IDS = new Set<string>([
   "bt-more--count-both-branches",
   // by hand: slice assignment + slice + reverse
   "list-edits--reverse-segment",
+  // Operators, `in` tests and stores counted as ideas (2026-10-12)
+  // backtracking
+  "bt-stop--prune",
+  // basics
+  "ternary--label",
+  // bisect
+  "bisect-queries--contains",
+  "bisect-queries--count-equal",
+  // bits
+  "bit-tricks--is-power-of-two",
+  "bit-single--in-mask",
+  "bit-more--bit-count-table",
+  "bit-more--lowest-bit-index",
+  // calling
+  "call-recursive-shapes--next-node",
+  // classes
+  "class-dunder--eq",
+  // comprehensions
+  "comp-filter--filter-and-map",
+  "comp-conditional--labels",
+  "comp-map--range",
+  "comp-filter--positive",
+  "comp-conditional--clip",
+  "comp-nested--grid-map",
+  "comp-dict--squares",
+  "comp-dict--word-lengths",
+  "comp-dict--invert",
+  "comp-zip--pair-sums",
+  // conditionals
+  "if-line--and",
+  "if-line--or",
+  "if-line--even",
+  "if-line--compare-items",
+  "update-best--if-form",
+  // counter
+  "counter-compare--anagram",
+  // deque
+  "deque-misc--drop-stale-front",
+  // dicts
+  "dict-patterns--count-loop",
+  "dict-patterns--two-sum-check",
+  "dict-write--increment-missing",
+  "dict-in--init-if-missing",
+  "dict-remove--drop-when-zero",
+  "dict-build--value-to-index",
+  "dict-build--char-to-index",
+  "dict-queries--shared-keys",
+  // dp
+  "dp-table--two-d",
+  "dp-transition--fibonacci",
+  "dp-transition--grid-paths",
+  "dp-more-transitions--lis",
+  "dp-more-transitions--two-digit-valid",
+  "memo--dict-check",
+  "dp-table--inf-table",
+  "dp-table--bool-table",
+  "dp-table--minus-one-memo",
+  "dp-transition--min-coins",
+  "dp-transition--lcs-match",
+  "dp-more-transitions--answer-or-minus-one",
+  // functions
+  "def-return--bool",
+  "def-return--either",
+  "def-whole--is-even",
+  "base-case--number",
+  "mutable-default--none-guard",
+  // graphs
+  "graph-edge-lists--relax-edge",
+  "graph-build--dict-of-lists",
+  "graph-visit--skip-seen",
+  "graph-visit--dfs-unseen",
+  "graph-union-find--union",
+  "graph-union-find--connected",
+  "graph-weighted--dist-list",
+  // grids
+  "grid-in-bounds--if-line",
+  "grid-in-bounds--m-n",
+  "grid-in-bounds--off-grid",
+  "grid-walks--on-border",
+  "grid-neighbors--four-neighbors",
+  // heaps
+  "heap-size-k--trim-loop",
+  "heap-dijkstra--skip-stale",
+  "heap-two-heaps--median-even",
+  "heap-simulations--replace-if-larger",
+  "heap-shapes--timed-out",
+  // intervals
+  "trie--step-or-fail",
+  // iteration
+  "iteration-combos--three-way-formula",
+  "enumerate-use--last-index-of-each",
+  // linked-lists
+  "ll-two-lists--carry-digit",
+  "ll-gap-and-digits--cycle-check",
+  // lists
+  "list-comprehension--filter",
+  "list-edits--zero-fill",
+  "list-find--index-or-minus-1",
+  "list-aggregate--average",
+  "list-grid-build--zeros",
+  "list-grid-build--visited",
+  "list-questions--all-equal",
+  "list-questions--average-last-k",
+  "list-edits--replace-negatives",
+  "list-edits--swap-adjacent",
+  // loops
+  "for-neighbors--in-bounds",
+  "while-compound--pointers-match",
+  "loop-control--break",
+  "loop-control--continue",
+  "while-more--heap-top-small",
+  // math
+  "sum-formula--missing-number",
+  "division-negative--ceil-div",
+  "abs-round--manhattan",
+  "infinity--unreached",
+  "sum-formula--gauss",
+  // objects
+  "obj-list--filter",
+  "obj-more--same-fields-lists",
+  // prefix-sums
+  "prefix-more--product-pass",
+  "prefix-hash--record-total",
+  "prefix-more--first-seen",
+  "prefix-more--pivot-test",
+  // sets
+  "set-ops--lists-in-common",
+  // slicing
+  "slice-immutable--str-replace-at-i",
+  "slice-rotate-left--list",
+  "slice-rotate-left--str",
+  "slice-rotate-left--tuple",
+  "slice-rotate-right--list",
+  "slice-rotate-right--str",
+  "slice-rotate-right--tuple",
+  "slice-assign--reverse-in-place",
+  "slice-immutable--str-remove-at-i",
+  "slice-compare--prefix-test",
+  "slice-compare--suffix-test",
+  "slice-compare--window-match",
+  // stack
+  "stack-brackets--mismatch",
+  "stack-monotonic--resolve",
+  "stack-top-test--smaller",
+  "stack-top-test--equals-char",
+  "stack-top-test--pair-value",
+  "stack-top-test--top-index",
+  "stack-top-test--empty",
+  // strings
+  "str-len--longer",
+  "str-len--same-length",
+  "str-compare--ignore-case",
+  "str-sort--anagram",
+  "str-ord--letter-index",
+  // trees
+  "tree-levels--level-average",
+  "tree-return-combined--depth",
+  "tree-return-combined--count",
+  "tree-return-combined--total",
+  // tuples
+  "tuple-more--pair-sums-with-index",
+  // two-pointers
+  "window--count-entering",
+  "tp-more--area",
+  "tp-more--subsequence-step",
 ]);
 
 /**

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { drawSession, pickWeighted, record, tagStats, weight } from "../src/core/history";
+import { drawSession, drawWeak, isWeak, pickWeighted, record, tagStats, weight } from "../src/core/history";
 import type { Card, History } from "../src/core/types";
 
 const NOW = 1_800_000_000_000;
@@ -113,6 +113,28 @@ describe("drawSession", () => {
     expect(withMiss).toContain(1);
     expect(a2First).toBeGreaterThan(0);
     expect(plain).toBeGreaterThan(0);
+  });
+
+  it("draws the weak cards first, then the other variants of their skills", () => {
+    let history: History = record({}, "a2", false, 1000, NOW);
+    history = record(history, "b1", true, 1000, NOW);
+    for (let i = 0; i < 20; i++) {
+      const ids = drawWeak(deck, history, 10, NOW).map((c) => c.id);
+      expect(ids[0]).toBe("a2");
+      expect([...ids].sort()).toEqual(["a1", "a2", "a3"]);
+    }
+    expect(drawWeak(deck, history, 1, NOW).map((c) => c.id)).toEqual(["a2"]);
+    expect(drawWeak(deck, {}, 10, NOW)).toEqual([]);
+  });
+});
+
+describe("isWeak", () => {
+  it("holds from a miss until 2 correct answers in a row", () => {
+    expect(isWeak(undefined)).toBe(false);
+    expect(isWeak(replay([true])["c"])).toBe(false);
+    expect(isWeak(replay([false])["c"])).toBe(true);
+    expect(isWeak(replay([false, true])["c"])).toBe(true);
+    expect(isWeak(replay([false, true, true])["c"])).toBe(false);
   });
 });
 

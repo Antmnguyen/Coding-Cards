@@ -10,10 +10,12 @@ export interface QueueState {
   /** Consecutive correct answers per card within this session. */
   streaks: Record<string, number>;
   mastered: string[];
+  /** Once-through only: cards missed in this pass, waiting for the next one. */
+  held: string[];
 }
 
 export function createQueue(ids: string[]): QueueState {
-  return { queue: [...ids], streaks: {}, mastered: [] };
+  return { queue: [...ids], streaks: {}, mastered: [], held: [] };
 }
 
 /**
@@ -34,7 +36,21 @@ export function answer(state: QueueState, correct: boolean, rng: Rng = Math.rand
   const streak = (state.streaks[id] ?? 0) + 1;
   const streaks = { ...state.streaks, [id]: streak };
   if (streak >= target) {
-    return { queue: rest, streaks, mastered: [...state.mastered, id] };
+    return { ...state, queue: rest, streaks, mastered: [...state.mastered, id] };
   }
   return { ...state, queue: [...rest, id], streaks };
+}
+
+/**
+ * Applies the answer for the head card in a once-through session.
+ * Every card is shown once. A miss is held back, and when the pass ends the
+ * held cards become the next pass, until each has been answered correctly once.
+ */
+export function answerOnce(state: QueueState, correct: boolean): QueueState {
+  const [id, ...rest] = state.queue;
+  if (id === undefined) return state;
+  const held = correct ? state.held : [...state.held, id];
+  const mastered = correct ? [...state.mastered, id] : state.mastered;
+  if (rest.length === 0) return { ...state, queue: held, held: [], mastered };
+  return { ...state, queue: rest, held, mastered };
 }

@@ -15,7 +15,7 @@ export const dicts = topic("python", "dicts", [
       accepted: ["d = {k: 0 for k in keys}"],
       explain: "dict.fromkeys(keys, value) gives every key the same value; do not use it with a list as the value.",
     }),
-    v("seeded", "Create `first_seen`, a dictionary that starts with the single entry 0 mapped to -1 (the usual prefix-sum seed).", "", "first_seen is {0: -1}", "first_seen = {0: -1}", "first_seen == {0: -1}"),
+    v("seeded", "Create `first_seen`, a dictionary with the single entry 0 mapped to -1.", "", "first_seen is {0: -1}", "first_seen = {0: -1}", "first_seen == {0: -1}"),
   ]),
 
   skill("dict-read", 1, { explain: "d[k] raises KeyError when the key is missing; d.get(k) returns None instead." }, [
@@ -26,7 +26,7 @@ export const dicts = topic("python", "dicts", [
     v("get-default", "`d` is a dictionary and `k` is a key that might not be in it. Get the value for `k`, or 0 if it is missing.", 'd = {"a": 1}\nk = "z"', "gives 0", "d.get(k, 0)", "_ == 0", {
       explain: "get never raises; the second argument is the fallback.",
     }),
-    v("get-default-list", "`graph` is a dictionary mapping a node to a list of neighbours, and `node` may have no entry. Get its neighbours, or an empty list when it has none.", "graph = {1: [2]}\nnode = 5", "gives []", "graph.get(node, [])", "_ == []"),
+    v("get-default-list", "`graph` is a dictionary whose values are lists, and `node` is a key that might be missing. Get the list for `node`, or an empty list if it is missing.", "graph = {1: [2]}\nnode = 5", "gives []", "graph.get(node, [])", "_ == []"),
     v("nested", "`d` is a dictionary whose values are dictionaries. Get the value stored under `a` and then `b`.", 'd = {"x": {"y": 7}}\na = "x"\nb = "y"', "gives 7", "d[a][b]", "_ == 7"),
     v("list-value-item", "`d` is a dictionary whose values are lists. Get the first item of the list stored under `k`.", 'd = {"a": [5, 6]}\nk = "a"', "gives 5", "d[k][0]", "_ == 5"),
     v("len", "`d` is a dictionary. Get how many keys it has.", 'd = {"a": 1, "b": 2}', "gives 2", "len(d)", "_ == 2"),
@@ -41,7 +41,7 @@ export const dicts = topic("python", "dicts", [
     v("append-to-list", "`d` is a dictionary whose values are lists, and `k` is already a key. Add `x` to the list stored under `k`.", 'd = {"a": [1]}\nk = "a"\nx = 2', 'd becomes {"a": [1, 2]}', "d[k].append(x)", 'd == {"a": [1, 2]}'),
     v("add-to-set", "`d` is a dictionary whose values are sets, and `k` is already a key. Add `x` to the set stored under `k`.", 'd = {"a": {1}}\nk = "a"\nx = 2', 'd becomes {"a": {1, 2}}', "d[k].add(x)", 'd == {"a": {1, 2}}'),
     v("nested", "`d` is a dictionary whose values are dictionaries, and `a` is already a key. Store `val` under `a` and then `b`.", 'd = {"x": {}}\na = "x"\nb = "y"\nval = 7', 'd becomes {"x": {"y": 7}}', "d[a][b] = val", 'd == {"x": {"y": 7}}'),
-    v("index-of-value", "`seen` is a dictionary mapping a number to the index where it was found. Record that the number `x` was found at index `i`.", "seen = {}\nx = 7\ni = 3", "seen becomes {7: 3}", "seen[x] = i", "seen == {7: 3}", {
+    v("index-of-value", "`seen` is a dictionary. Store the value `i` under the key `x`.", "seen = {}\nx = 7\ni = 3", "seen becomes {7: 3}", "seen[x] = i", "seen == {7: 3}", {
       explain: "The number is the key and the index is the value, so later lookups are by number.",
     }),
   ]),
@@ -54,7 +54,7 @@ export const dicts = topic("python", "dicts", [
     v("has-value", "`d` is a dictionary. Write an expression that is True when `x` is one of its VALUES.", 'd = {"a": 1, "b": 2}\nx = 2', "gives True", "x in d.values()", "_ is True", {
       explain: "Searching the values scans them all, so it is O(n).",
     }),
-    v("complement", "`seen` is a dictionary keyed by numbers already visited. `target` and `x` are numbers. Write an expression that is True when the number that adds to `x` to make `target` has been seen.", "seen = {2: 0}\ntarget = 9\nx = 7", "gives True", "target - x in seen", "_ is True", {
+    v("complement", "`seen` is a dictionary keyed by numbers, and `target` and `x` are numbers. Write an expression that is True when `target - x` is one of its keys.", "seen = {2: 0}\ntarget = 9\nx = 7", "gives True", "target - x in seen", "_ is True", {
       explain: "Arithmetic binds tighter than `in`, so no parentheses are needed.",
     }),
     v("init-if-missing", "`d` is a dictionary whose values are lists. When `k` is not yet a key, give it an empty list. Write the `if` line and the line under it.", 'd = {}\nk = "a"', 'd becomes {"a": []}', "if k not in d:\n    d[k] = []", 'd == {"a": []}'),
@@ -74,6 +74,12 @@ export const dicts = topic("python", "dicts", [
       accepted: ["if d[k] == 0:\n    d.pop(k)", "if not d[k]:\n    del d[k]"],
       explain: "Removing zero counts keeps len(d) equal to the number of distinct items in a sliding window.",
     }),
+  ]),
+
+  skill("dict-view", 1, { explain: "keys(), values() and items() are methods, so they need the brackets." }, [
+    v("keys", "`d` is a dictionary. Get a view of its keys.", 'd = {"a": 1, "b": 2}', 'gives the keys "a" and "b"', "d.keys()", 'type(_) is type({}.keys()) and list(_) == ["a", "b"]'),
+    v("values", "`ages` is a dictionary. Get a view of its values.", 'ages = {"ann": 30, "bob": 25}', "gives the values 30 and 25", "ages.values()", "type(_) is type({}.values()) and list(_) == [30, 25]"),
+    v("items", "`d` is a dictionary. Get a view of its (key, value) pairs.", 'd = {"a": 1, "b": 2}', 'gives the pairs ("a", 1) and ("b", 2)', "d.items()", 'type(_) is type({}.items()) and list(_) == [("a", 1), ("b", 2)]'),
   ]),
 
   skill("dict-views", 1, { explain: "keys(), values() and items() return live views, not lists." }, [

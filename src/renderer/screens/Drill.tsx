@@ -15,6 +15,7 @@ type Phase = "answer" | "checking" | "reveal";
 export function Drill() {
   const session = useStore((s) => s.session)!;
   const settings = useStore((s) => s.settings);
+  const history = useStore((s) => s.history);
   const pyReady = useStore((s) => s.pyReady);
   const recordAnswer = useStore((s) => s.recordAnswer);
   const finish = useStore((s) => s.finish);
@@ -90,7 +91,9 @@ export function Drill() {
 
   if (!card) return null;
 
-  const mustRetype = phase === "reveal" && !reveal!.ok && settings.forceCorrection;
+  const once = session.mode === "once";
+  // Once-through always makes a miss be retyped; the retype is never recorded as an answer.
+  const mustRetype = phase === "reveal" && !reveal!.ok && (settings.forceCorrection || once);
 
   function nextCard() {
     setReveal(null);
@@ -151,6 +154,9 @@ export function Drill() {
 
   const elapsed = now - session.startedAt;
   const remaining = session.total - session.q.mastered.length;
+  // After the first pass every card in play is one that has been missed.
+  const reviewing = once && session.answers - (reveal ? 1 : 0) >= session.total;
+  const seen = history[card.id];
   const secondsLeft = session.endsAt ? Math.max(0, Math.ceil((session.endsAt - now) / 1000)) : null;
   const given = givenCode(card);
   const typing = phase !== "reveal" || mustRetype;
@@ -162,6 +168,7 @@ export function Drill() {
         <span>
           <b>{remaining}</b> left
         </span>
+        {reviewing && <span>review</span>}
         <span>
           <b>{session.streak}</b> streak
         </span>
@@ -176,7 +183,10 @@ export function Drill() {
       </header>
 
       <section className="card">
-        <div className="tag">{card.tags.join(" · ")}</div>
+        <div className="tag">
+          {card.tags.join(" · ")}
+          {seen && ` · right ${seen.correct} of ${seen.attempts}`}
+        </div>
         <p className="prompt">
           <Prompt text={card.prompt} />
         </p>

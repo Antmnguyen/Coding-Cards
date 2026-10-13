@@ -211,7 +211,7 @@ export const dictsMore = topic("python", "dicts", [
       accepted: ["d.setdefault(a, {})[b] = val"],
     }),
     v("list-of-dicts", "`rows` is a list of dictionaries, each with a name and an age. Get the name stored in the row at index `i`.", 'rows = [{"name": "ann", "age": 30}, {"name": "bob", "age": 25}]\ni = 1', 'gives "bob"', 'rows[i]["name"]', '_ == "bob"'),
-    v("sort-list-of-dicts", "`rows` is a list of dictionaries, each with a name and an age. Get a sorted copy ordered by age. Call each dictionary `r`.", 'rows = [{"name": "ann", "age": 30}, {"name": "bob", "age": 25}]', "gives bob's row first, then ann's", 'sorted(rows, key=lambda r: r["age"])', '[r["name"] for r in _] == ["bob", "ann"]'),
+    v("sort-list-of-dicts", "`rows` is a list of dictionaries, each with a name and an age. Get a sorted copy ordered by age. Call each dictionary `r`.", 'rows = [{"name": "ann", "age": 30}, {"name": "bob", "age": 25}]', "gives bob's row first, then ann's", 'sorted(rows, key=lambda r: r["age"])', '[r["name"] for r in _] == ["bob", "ann"]', { tags: ["sorting"] }),
   ]),
 
   skill("dict-queries", 2, { explain: "Questions about a whole dict are comprehensions or generators over items(), keys() or values()." }, [
@@ -229,13 +229,13 @@ export const dictsMore = topic("python", "dicts", [
     v("equal", "`d1` and `d2` are dictionaries built in different orders. Write an expression that is True when they hold the same keys and values.", 'd1 = {"a": 1, "b": 2}\nd2 = {"b": 2, "a": 1}', "gives True", "d1 == d2", "_ is True", {
       explain: "Insertion order does not matter for dict equality.",
     }),
-    v("items-sorted-by-key", "`d` is a dictionary. Get its (key, value) pairs as a list sorted by key.", 'd = {"b": 2, "a": 1}', 'gives [("a", 1), ("b", 2)]', "sorted(d.items())", '_ == [("a", 1), ("b", 2)]'),
+    v("items-sorted-by-key", "`d` is a dictionary. Get its (key, value) pairs as a list sorted by key.", 'd = {"b": 2, "a": 1}', 'gives [("a", 1), ("b", 2)]', "sorted(d.items())", '_ == [("a", 1), ("b", 2)]', { tags: ["sorting"] }),
   ]),
 
   skill("dict-patterns", 2, { explain: "Most hashmap solutions are one of two loops: count everything, or look up a complement while storing what has been seen." }, [
     v("count-loop", "`d` is an empty plain dictionary and `nums` is a list. Count how many times each item appears (2 lines). Call each item `x`.", "d = {}\nnums = [1, 1, 2]", "d becomes {1: 2, 2: 1}", "for x in nums:\n    d[x] = d.get(x, 0) + 1", "d == {1: 2, 2: 1}"),
     v("char-counts-comprehension", "`s` is a string. In one expression, build a dictionary mapping each distinct character `c` to how many times it appears.", 's = "aab"', 'gives {"a": 2, "b": 1}', "{c: s.count(c) for c in set(s)}", '_ == {"a": 2, "b": 1}'),
-    v("two-sum-check", "Inside the function below, `seen` maps each earlier number to its index, and `x` is the number at index `i`. When the number needed to reach `target` has been seen, return its index and `i` as a list (2 lines).", "", "result ends up [0, 1]", "if target - x in seen:\n    return [seen[target - x], i]", "result == [0, 1]", {
+    v("two-sum-check", "Inside the function below, `seen` is a dictionary of number to index and `x` is the number at index `i`. When `target - x` is a key of `seen`, return a list of the index stored under it and `i` (2 lines).", "", "result ends up [0, 1]", "if target - x in seen:\n    return [seen[target - x], i]", "result == [0, 1]", {
       template: "def two_sum(nums, target):\n    seen = {}\n    for i, x in enumerate(nums):\n        {answer}\n        seen[x] = i\n\nresult = two_sum([2, 7, 11], 9)",
     }),
     v("popitem", "`d` is a dictionary. Remove its most recently added entry and get it back as a (key, value) tuple.", 'd = {"a": 1, "b": 2}', 'gives ("b", 2), and d becomes {"a": 1}', "d.popitem()", '_ == ("b", 2) and d == {"a": 1}'),

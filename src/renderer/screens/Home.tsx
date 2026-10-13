@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
 import { cards, groups } from "../../cards";
-import { tagStats, worstCards } from "../../core/history";
-import type { SessionLength } from "../../core/types";
+import { tagStats, weakPool, worstCards } from "../../core/history";
+import { sessionPool } from "../../core/pool";
+import type { Mode, SessionLength } from "../../core/types";
 import { useStore } from "../store";
 import { percent, Prompt, useKeys } from "../ui";
 
 const LENGTHS: { label: string; value: SessionLength }[] = [
+  { label: "5", value: { kind: "count", n: 5 } },
   { label: "10", value: { kind: "count", n: 10 } },
   { label: "25", value: { kind: "count", n: 25 } },
   { label: "50", value: { kind: "count", n: 50 } },
@@ -19,6 +21,16 @@ const sameLength = (a: SessionLength, b: SessionLength) =>
   a.kind === "count" ? b.kind === "count" && a.n === b.n : b.kind === "timed" && a.seconds === b.seconds;
 
 const LEVELS = ["1 basics", "2 everyday", "3 rare"];
+
+const MODES: { label: string; value: Mode; note: string }[] = [
+  { label: "standard", value: "standard", note: "each card until it is right 2 times in a row" },
+  {
+    label: "once through",
+    value: "once",
+    note: "each card once; a miss is retyped, then repeated at the end until it is right first try",
+  },
+  { label: "practice weak", value: "weak", note: "cards you have been getting wrong, and their variants" },
+];
 
 const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
 
@@ -47,6 +59,14 @@ export function Home() {
         run: () => update({ tags: toggle(settings.tags, tag) }),
       })),
     })),
+    {
+      name: "mode",
+      items: MODES.map((m) => ({
+        label: m.label,
+        active: settings.mode === m.value,
+        run: () => update({ mode: m.value }),
+      })),
+    },
     {
       name: "level",
       items: LEVELS.map((label, i) => ({
@@ -100,6 +120,13 @@ export function Home() {
   const stats = useMemo(() => tagStats(shown, history), [shown, history]);
   const worst = useMemo(() => worstCards(shown, history, 5), [shown, history]);
   const hasHistory = stats.some((s) => s.attempts > 0);
+  const weak = useMemo(() => weakPool(sessionPool(cards, settings), history), [settings, history]);
+  const note =
+    settings.mode !== "weak"
+      ? MODES.find((m) => m.value === settings.mode)!.note
+      : weak.weak.length === 0
+        ? "no weak cards in these topics and levels: nothing to practise yet"
+        : `${weak.weak.length} weak cards and ${weak.variants.length} variants in these topics and levels`;
 
   return (
     <main className="home">
@@ -128,6 +155,8 @@ export function Home() {
           </div>
         ))}
       </div>
+
+      <p className="mode-note">{note}</p>
 
       <div className="actions">
         <button className="start" tabIndex={-1} onClick={start}>

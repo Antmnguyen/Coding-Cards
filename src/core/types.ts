@@ -47,7 +47,11 @@ export type SessionLength =
   | { kind: "count"; n: number }
   | { kind: "timed"; seconds: number };
 
+/** "once" shows each card one time, then repeats the misses. "weak" draws the cards that keep being missed. */
+export type Mode = "standard" | "once" | "weak";
+
 export interface Settings {
+  mode: Mode;
   /** Empty means every topic. */
   tags: string[];
   length: SessionLength;

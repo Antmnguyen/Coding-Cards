@@ -18,17 +18,23 @@ An idea is one piece of syntax you have to remember:
 | a comprehension clause | the `for` is 1, an `if` filter is 1 more, a second `for` is 1 more |
 | a conditional expression | `a if cond else b` |
 | `and` / `or` | each one |
+| an operator | arithmetic (`+ 1`, `target - x`), a comparison (`== 0`, `<`), a set or bit operator (`&`, `<<`); each one |
+| an `in` / `not in` test | `k in d`, `x not in seen` (the `in` of a `for` is part of the header) |
+| storing under a key or index | `d[k] = ...` when the value is more than a plain name or literal |
+| the `key: value` form of a dict comprehension | on top of its `for` clause |
 | a statement header | `for ... in ...:`, `while ...:`, `if ...:`, `def ...:`, `class ...:`, a decorator line |
 | each statement | every line is at least 1 (an import line is free) |
 | a tuple key, a negation | `lambda w: (len(w), w)`, `-x` |
 
-Free: variable names, operators, and reaching into the item you were given inside a lambda (`p.y`, `p[1]`). `range(len(x))` is typed as one unit and counts once.
+Free: variable names, and reaching into the item you were given inside a lambda (`p.y`, `p[1]`). An operator inside the brackets of a call or an index belongs to that call or index and is not counted again: `range(n + 1)` is 1, `a[i + 1]` is 1. `range(len(x))` is typed as one unit and counts once. A line with nothing else on it is 1, so `(lo + hi) // 2` is 2, not 3.
 
 | Answer | Ideas | |
 |---|---|---|
 | `sorted(nums, reverse=True)` | 2 | recall |
 | `sorted(points, key=lambda p: p.x)` | 2 | recall |
-| `if k not in d:` / `d[k] = []` | 2 | recall |
+| `n % 2 == 0` | 2 | recall |
+| `if k not in d:` / `d[k] = []` | 3 | thinking |
+| `d[k] = d.get(k, 0) + 1` | 3 | thinking |
 | `points.sort(key=lambda p: p.y, reverse=True)` | 3 | thinking |
 | `"".join(sorted(s, reverse=True))` | 3 | thinking |
 | `for r in range(rows):` / `for c in range(cols):` | 4 | thinking |

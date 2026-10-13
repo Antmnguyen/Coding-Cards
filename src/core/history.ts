@@ -95,6 +95,25 @@ export function drawSession(cards: Card[], history: History, n: number, now: num
     .map((x) => x.card);
 }
 
+/** A card that has been missed and not yet answered correctly enough times in a row since. */
+export const isWeak = (h: CardHistory | undefined): boolean => !!h && h.lastMiss > 0 && h.streak < MASTERY_STREAK;
+
+/** The weak cards of a pool, and the other variants of their skills. */
+export function weakPool(cards: Card[], history: History): { weak: Card[]; variants: Card[] } {
+  const weak = cards.filter((c) => isWeak(history[c.id]));
+  const skills = new Set(weak.map((c) => c.skill));
+  return { weak, variants: cards.filter((c) => skills.has(c.skill) && !isWeak(history[c.id])) };
+}
+
+/** Draws a session of weak cards, filled up with their variants when there is room. */
+export function drawWeak(cards: Card[], history: History, n: number, now: number, rng: Rng = Math.random): Card[] {
+  const { weak, variants } = weakPool(cards, history);
+  return [
+    ...drawSession(weak, history, weak.length, now, rng),
+    ...drawSession(variants, history, variants.length, now, rng),
+  ].slice(0, n);
+}
+
 export interface TagStat {
   tag: string;
   total: number;

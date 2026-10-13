@@ -9,6 +9,7 @@ export function Results() {
   const goHome = useStore((s) => s.goHome);
   const openBrowse = useStore((s) => s.openBrowse);
   const focus = session.focus;
+  const once = session.mode === "once";
 
   useKeys((e) => {
     if (e.key === "Enter" || e.key === "Tab") {
@@ -37,9 +38,9 @@ export function Results() {
         </div>
         <div>
           <b>
-            {session.q.mastered.length}/{session.total}
+            {once ? session.total - session.missed.length : session.q.mastered.length}/{session.total}
           </b>
-          <span>mastered</span>
+          <span>{once ? "first try" : "mastered"}</span>
         </div>
         <div>
           <b>{session.bestStreak}</b>

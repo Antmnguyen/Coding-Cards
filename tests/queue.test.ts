@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { answer, createQueue } from "../src/core/queue";
+import { answer, answerOnce, createQueue } from "../src/core/queue";
 
 const ids = ["a", "b", "c", "d", "e", "f"];
 
@@ -46,5 +46,39 @@ describe("queue", () => {
   it("ignores answers once the queue is empty", () => {
     const q = createQueue([]);
     expect(answer(q, true)).toBe(q);
+  });
+});
+
+describe("once-through queue", () => {
+  it("shows every card once, then only the misses", () => {
+    let q = createQueue(["a", "b", "c"]);
+    q = answerOnce(q, true); // a
+    q = answerOnce(q, false); // b
+    expect(q.queue).toEqual(["c"]);
+    q = answerOnce(q, false); // c
+    expect(q.queue).toEqual(["b", "c"]);
+    expect(q.mastered).toEqual(["a"]);
+  });
+
+  it("repeats a miss in the next pass until it is right once", () => {
+    let q = createQueue(["a", "b"]);
+    q = answerOnce(q, false); // a
+    q = answerOnce(q, false); // b
+    q = answerOnce(q, false); // a again
+    q = answerOnce(q, true); // b
+    expect(q.queue).toEqual(["a"]);
+    q = answerOnce(q, false);
+    expect(q.queue).toEqual(["a"]);
+    q = answerOnce(q, true);
+    expect(q.queue).toEqual([]);
+    expect(q.mastered).toEqual(["b", "a"]);
+  });
+
+  it("ends after one pass when nothing is missed", () => {
+    let q = createQueue(["a", "b"]);
+    q = answerOnce(q, true);
+    q = answerOnce(q, true);
+    expect(q.queue).toEqual([]);
+    expect(answerOnce(q, true)).toBe(q);
   });
 });
